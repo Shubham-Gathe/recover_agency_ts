@@ -1,0 +1,126 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Button,
+    TextField,
+    MenuItem,
+} from '@mui/material';
+import type { UserProps } from '../user-table-row';
+
+type AddUserDialogProps = {
+    open: boolean;
+    onClose: () => void;
+    onAddUser: (user: UserProps) => void;
+    editingUser: UserProps | null;
+};
+
+export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUserDialogProps) {
+    const [newUser, setNewUser] = useState<UserProps>({
+        id: '',
+        name: '',
+        email: '',
+        type: 'UserBlock::Executive', // Default type
+        password: '', // Add password to the state
+    });
+
+    // Pre-fill the form fields when editingUser is available
+    useEffect(() => {
+        if (editingUser) {
+            setNewUser(editingUser);
+        }
+    }, [editingUser]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewUser({ ...newUser, [e.target.name]: e.target.value });
+    };
+
+    const addUser = async () => {
+        const postUser = {...newUser,type:newUser.type.toLocaleLowerCase().replace('userblock::','')}
+        try {
+            await axios.post('http://16.171.247.65:3000/sign_up', postUser);
+        } catch (error) {
+            console.error('Error adding user:', error);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (editingUser) {
+            onAddUser({ ...newUser });
+        } else {
+            onAddUser({ ...newUser, id: Date.now().toString() });
+            
+            addUser();
+        }
+        onClose();
+    };
+
+    // Reset form when dialog is closed
+    useEffect(() => {
+        if (!open) {
+            setNewUser({
+                id: '',
+                name: '',
+                email: '',
+                type: 'UserBlock::Executive',
+                password: '', // Reset the password field
+            });
+        }
+    }, [open]);
+
+    return (
+        <Dialog open={open} onClose={onClose}>
+            <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    name="name"
+                    label="Name"
+                    fullWidth
+                    value={newUser.name}
+                    onChange={handleChange}
+                />
+                <TextField
+                    margin="dense"
+                    name="email"
+                    label="Email"
+                    fullWidth
+                    value={newUser.email}
+                    onChange={handleChange}
+                />
+                <TextField
+                    select
+                    margin="dense"
+                    name="type"
+                    label="Type"
+                    fullWidth
+                    value={newUser.type}
+                    onChange={handleChange}
+                >
+                    <MenuItem value="UserBlock::Admin">Admin</MenuItem>
+                    <MenuItem value="UserBlock::Caller">Caller</MenuItem>
+                    <MenuItem value="UserBlock::Executive">Executive</MenuItem>
+                </TextField>
+                <TextField
+                    margin="dense"
+                    name="password"
+                    label="Password"
+                    type="password" // Make sure to hide the password input
+                    fullWidth
+                    value={newUser.password}
+                    onChange={handleChange}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={handleSubmit} color="primary">
+                    {editingUser ? 'Update User' : 'Add User'}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
