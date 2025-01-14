@@ -13,6 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Snackbar from '@mui/material/Snackbar'; // Import Snackbar for error display
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Iconify } from 'src/components/iconify';
+import process from "process";
 
 interface LoginFormValues {
   email: string;
@@ -20,6 +21,8 @@ interface LoginFormValues {
 }
 
 export function SignInView() {
+  const apiUrl = 'http://localhost:3001'
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate(); 
   const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);  
@@ -39,7 +42,8 @@ export function SignInView() {
         setOpenErrorSnackbar(false);
       }, 3000);
     }
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
+      console.log('dashboard auth true');
       navigate('/dashboard'); 
     }
   }, [error, isAuthenticated, navigate]); 
