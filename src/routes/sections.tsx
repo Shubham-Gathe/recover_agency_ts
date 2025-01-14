@@ -34,10 +34,10 @@ const renderFallback = (
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated); // Get authentication state from Redux
 
-  // if (isAuthenticated) {
-  //   // Redirect to sign-in if not authenticated
-  //   return <Navigate to="/" replace />;
-  // }
+  if (!isAuthenticated) {
+    // Redirect to sign-in if not authenticated
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 };
