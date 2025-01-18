@@ -13,6 +13,7 @@ import {
   InputLabel,
   Autocomplete,
   TextField,
+  Snackbar,
 } from '@mui/material';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -40,6 +41,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const token = useSelector((state: RootState) => state.auth.token);
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
 
   // Fetch users from the API
   useEffect(() => {
@@ -110,9 +112,20 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
         {headers}
       ).then((response) => {
         console.log('assign response', response);
+        window.location.reload();
+        setOpenErrorSnackbar(true);
+        setTimeout(() => {
+          setOpenErrorSnackbar(false);
+        }, 3000);
+        setError(response.data.message);
       });
       onClose();
     } catch (err) {
+      setError(err);
+      setOpenErrorSnackbar(true);
+      setTimeout(() => {
+        setOpenErrorSnackbar(false);
+      }, 3000);
       setError('Failed to assign rows. Please try again.');
     } finally {
       setIsLoading(false);
@@ -120,46 +133,60 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Assign Rows</DialogTitle>
-      <DialogContent>
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="user-type-label">User Type</InputLabel>
-          <Select
-            labelId="user-type-label"
-            value={userType}
-            onChange={(e) => setUserType(e.target.value as 'caller' | 'executive')}
-          >
-            <MenuItem value="caller">Caller</MenuItem>
-            <MenuItem value="executive">Executive</MenuItem>
-          </Select>
-        </FormControl>
-        <Autocomplete
-          options={filteredUsers}
-          getOptionLabel={(option) => `${option.name} (${option.email})`}
-          value={selectedUser}
-          onChange={(event, newValue) => setSelectedUser(newValue)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={isLoading ? 'Loading users...' : 'Select User'}
-              margin="normal"
-              fullWidth
-            />
-          )}
-          disabled={isLoading}
-        />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={isLoading}>
-          Cancel
-        </Button>
-        <Button onClick={handleAssign} disabled={isLoading || !selectedUser}>
-          {isLoading ? <CircularProgress size={24} /> : 'Assign'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <DialogTitle>Assign Rows</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="user-type-label">User Type</InputLabel>
+            <Select
+              labelId="user-type-label"
+              value={userType}
+              onChange={(e) => setUserType(e.target.value as 'caller' | 'executive')}
+            >
+              <MenuItem value="caller">Caller</MenuItem>
+              <MenuItem value="executive">Executive</MenuItem>
+            </Select>
+          </FormControl>
+          <Autocomplete
+            options={filteredUsers}
+            getOptionLabel={(option) => `${option.name} (${option.email})`}
+            value={selectedUser}
+            onChange={(event, newValue) => setSelectedUser(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={isLoading ? 'Loading users...' : 'Select User'}
+                margin="normal"
+                fullWidth
+              />
+            )}
+            disabled={isLoading}
+          />
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button onClick={handleAssign} disabled={isLoading || !selectedUser}>
+            {isLoading ? <CircularProgress size={24} /> : 'Assign'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={openErrorSnackbar}
+        autoHideDuration={3000} // Automatically hide after 3 seconds
+        onClose={() => setOpenErrorSnackbar(false)}
+        message={error} // Display the message
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{
+          backgroundColor: '', // Error background color
+          color: 'error', // White text color
+          borderRadius: 1,
+        }}
+      />
+    </>
   );
 };
 
