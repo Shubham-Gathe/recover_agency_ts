@@ -31,7 +31,7 @@ const AllocationView = () => {
     const [page, setPage] = useState(0); // Current page
 
     const [paginationModel, setPaginationModel] = React.useState({
-        page: 1,
+        page: 0,
         pageSize: 10,
       });
 
@@ -60,7 +60,9 @@ const AllocationView = () => {
           });
     
           const { data, metadata } = response.data; // Assuming response includes data and metadata
-          console.log(data)
+          setTotalRows(metadata.total);
+          console.log('data', data);
+          console.log('metadata', metadata);
           setRows(data); // Set the data to be displayed in the DataGrid
            // Set total number of rows for pagination
         } catch (error) {
