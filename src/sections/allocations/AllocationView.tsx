@@ -14,11 +14,10 @@ import { Scrollbar } from "src/components/scrollbar";
 import axios from "axios";
 import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
 import { useDispatch, useSelector } from "react-redux";
-import process from "process";
+import AssignDialog from './AssignDialog';
 
 const AllocationView = () => {
     const apiUrl = 'http://localhost:3001'
-
    
     console.log("API URL:", apiUrl);
 
@@ -29,7 +28,8 @@ const AllocationView = () => {
     const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
     const [totalRows, setTotalRows] = useState(0);
     const [page, setPage] = useState(0); // Current page
-
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [RowSelectionModel,setRowSelectionModel] = useState();
     const [paginationModel, setPaginationModel] = React.useState({
         page: 0,
         pageSize: 10,
@@ -72,6 +72,8 @@ const AllocationView = () => {
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
+    const handleOpenDialog = () => setDialogOpen(true);
+    const handleCloseDialog = () => setDialogOpen(false);
     const fetchPage = async () => {
         try {
           const response = await axios.get(`${apiUrl}/allocation_drafts`, {
@@ -182,6 +184,21 @@ const AllocationView = () => {
                 >
                     New Allocation
                 </Button>
+                <AssignDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    selectedRows={RowSelectionModel}
+                    apiUrl={apiUrl}
+                />
+                <Button
+                    onClick={handleOpenDialog}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Iconify icon="mingcute:add-line" />}
+                    sx={{ textTransform: 'none', borderRadius: 2 }}
+                >
+                    Assign
+                </Button>
             </Box>
 
             <Card sx={{ p: 2 }}>
@@ -226,7 +243,8 @@ const AllocationView = () => {
                                 checkboxSelection
                                 onRowSelectionModelChange={(newRowSelectionModel) => {
                                     console.log('newRowSelectionModel',newRowSelectionModel);
-                                    // setRowSelectionModel(newRowSelectionModel);
+
+                                    setRowSelectionModel(newRowSelectionModel);
                                 }}
                                 // rowSelectionModel={
                                 //     rowSelectionModel
