@@ -19,7 +19,7 @@ import process from "process";
 const AllocationView = () => {
     const apiUrl = 'http://localhost:3001'
 
-  
+   
     console.log("API URL:", apiUrl);
 
     const dispatch = useDispatch<AppDispatch>();
@@ -41,7 +41,34 @@ const AllocationView = () => {
             [field]: value,
         }));
     };
-    console.log(rows);
+
+    const mySaveOnServerFunction = async(updatedRow: any, originalRow: any) => {
+        console.log('updatedRow', updatedRow);
+        try {
+            const response = await axios.put(`${apiUrl}/allocation_drafts/${updatedRow.id}`, {
+                data: updatedRow
+            },
+            {
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                }
+
+            }).then ((response) => {
+                console.log('response------------------', response);
+            });
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+    const handleProcessRowUpdateError = () => {
+        console.log('-----------handleProcessRowUpdateError-----------');
+    }
+    const rowsWithSerialNumbers = rows.map((row, index) => ({
+        ...row,
+        serialNumber: index + 1, // Add serial number (1-based index)
+    }));
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -71,55 +98,56 @@ const AllocationView = () => {
       };
 
     const columns = [
-        { field: "id", headerName: "ID", width: 90 },
-        { field: "customer_name", headerName: "Customer Name", width: 200 },
-        { field: "segment", headerName: "Segment", width: 150 },
-        { field: "pool", headerName: "Pool", width: 150 },
-        { field: "branch", headerName: "Branch", width: 150 },
-        { field: "agreement_id", headerName: "Agreement ID", width: 150 },
-        { field: "pro", headerName: "Pro", width: 100 },
-        { field: "bkt", headerName: "BKT", width: 100 },
-        { field: "fos_name", headerName: "FOS Name", width: 200 },
-        { field: "fos_mobile_no", headerName: "FOS Mobile Number", width: 200 },
-        { field: "caller_name", headerName: "Caller Name", width: 200 },
-        { field: "caller_mo_number", headerName: "Caller Mobile Number", width: 200 },
-        { field: "f_code", headerName: "F Code", width: 150 },
-        { field: "ptp_date", headerName: "PTP Date", width: 150 },
-        { field: "feedback", headerName: "Feedback", width: 200 },
-        { field: "res", headerName: "Resolution", width: 150 },
-        { field: "emi_coll", headerName: "EMI Collection", width: 150 },
-        { field: "cbc_coll", headerName: "CBC Collection", width: 150 },
-        { field: "total_coll", headerName: "Total Collection", width: 150 },
-        { field: "fos_id", headerName: "FOS ID", width: 150 },
-        { field: "mobile", headerName: "Mobile Number", width: 200 },
-        { field: "address", headerName: "Address", width: 300 },
-        { field: "zipcode", headerName: "Zip Code", width: 150 },
-        { field: "phone1", headerName: "Phone 1", width: 150 },
-        { field: "phone2", headerName: "Phone 2", width: 150 },
-        { field: "loan_amt", headerName: "Loan Amount", width: 150 },
-        { field: "pos", headerName: "POS", width: 150 },
-        { field: "emi_amt", headerName: "EMI Amount", width: 150 },
-        { field: "emi_od_amt", headerName: "EMI OD Amount", width: 150 },
-        { field: "bcc_pending", headerName: "BCC Pending", width: 150 },
-        { field: "penal_pending", headerName: "Penal Pending", width: 150 },
-        { field: "cycle", headerName: "Cycle", width: 150 },
-        { field: "tenure", headerName: "Tenure", width: 150 },
-        { field: "disb_date", headerName: "Disbursal Date", width: 150 },
-        { field: "emi_start_date", headerName: "EMI Start Date", width: 150 },
-        { field: "emi_end_date", headerName: "EMI End Date", width: 150 },
-        { field: "manufacturer_desc", headerName: "Manufacturer Description", width: 250 },
-        { field: "asset_cat", headerName: "Asset Category", width: 200 },
-        { field: "supplier", headerName: "Supplier", width: 250 },
-        { field: "system_bounce_reason", headerName: "System Bounce Reason", width: 250 },
-        { field: "reference1_name", headerName: "Reference 1 Name", width: 250 },
-        { field: "reference2_name", headerName: "Reference 2 Name", width: 250 },
-        { field: "so_name", headerName: "SO Name", width: 200 },
-        { field: "ro_name", headerName: "RO Name", width: 200 },
-        { field: "all_dt", headerName: "Allocation Date", width: 150 },
-        { field: "created_at", headerName: "Created At", width: 200 },
-        { field: "updated_at", headerName: "Updated At", width: 200 },
-        { field: "caller_id", headerName: "Caller ID", width: 150 },
-        { field: "executive_id", headerName: "Executive ID", width: 150 },
+        { field: "serialNumber", headerName: "Sr.No", width: 90 },
+        { field: "id", headerName: "ID", width: 90},
+        { field: "customer_name", headerName: "Customer Name", width: 200, editable: true  },
+        { field: "segment", headerName: "Segment", width: 150, editable: true  },
+        { field: "pool", headerName: "Pool", width: 150, editable: true },
+        { field: "branch", headerName: "Branch", width: 150, editable: true  },
+        { field: "agreement_id", headerName: "Agreement ID", width: 150, editable: true  },
+        { field: "pro", headerName: "Pro", width: 100, editable: true  },
+        { field: "bkt", headerName: "BKT", width: 100, editable: true  },
+        { field: "fos_name", headerName: "FOS Name", width: 200, editable: true  },
+        { field: "fos_mobile_no", headerName: "FOS Mobile Number", width: 200, editable: true  },
+        { field: "caller_name", headerName: "Caller Name", width: 200, editable: true  },
+        { field: "caller_mo_number", headerName: "Caller Mobile Number", width: 200, editable: true  },
+        { field: "f_code", headerName: "F Code", width: 150, editable: true  },
+        { field: "ptp_date", headerName: "PTP Date", width: 150, editable: true  },
+        { field: "feedback", headerName: "Feedback", width: 200, editable: true  },
+        { field: "res", headerName: "Resolution", width: 150, editable: true  },
+        { field: "emi_coll", headerName: "EMI Collection", width: 150, editable: true  },
+        { field: "cbc_coll", headerName: "CBC Collection", width: 150, editable: true  },
+        { field: "total_coll", headerName: "Total Collection", width: 150, editable: true  },
+        { field: "fos_id", headerName: "FOS ID", width: 150, editable: true  },
+        { field: "mobile", headerName: "Mobile Number", width: 200, editable: true  },
+        { field: "address", headerName: "Address", width: 300, editable: true  },
+        { field: "zipcode", headerName: "Zip Code", width: 150, editable: true  },
+        { field: "phone1", headerName: "Phone 1", width: 150, editable: true  },
+        { field: "phone2", headerName: "Phone 2", width: 150, editable: true  },
+        { field: "loan_amt", headerName: "Loan Amount", width: 150, editable: true  },
+        { field: "pos", headerName: "POS", width: 150, editable: true  },
+        { field: "emi_amt", headerName: "EMI Amount", width: 150, editable: true  },
+        { field: "emi_od_amt", headerName: "EMI OD Amount", width: 150, editable: true  },
+        { field: "bcc_pending", headerName: "BCC Pending", width: 150, editable: true  },
+        { field: "penal_pending", headerName: "Penal Pending", width: 150, editable: true  },
+        { field: "cycle", headerName: "Cycle", width: 150, editable: true  },
+        { field: "tenure", headerName: "Tenure", width: 150, editable: true  },
+        { field: "disb_date", headerName: "Disbursal Date", width: 150, editable: true  },
+        { field: "emi_start_date", headerName: "EMI Start Date", width: 150, editable: true  },
+        { field: "emi_end_date", headerName: "EMI End Date", width: 150, editable: true  },
+        { field: "manufacturer_desc", headerName: "Manufacturer Description", width: 250, editable: true  },
+        { field: "asset_cat", headerName: "Asset Category", width: 200, editable: true  },
+        { field: "supplier", headerName: "Supplier", width: 250, editable: true  },
+        { field: "system_bounce_reason", headerName: "System Bounce Reason", width: 250, editable: true  },
+        { field: "reference1_name", headerName: "Reference 1 Name", width: 250, editable: true  },
+        { field: "reference2_name", headerName: "Reference 2 Name", width: 250, editable: true  },
+        { field: "so_name", headerName: "SO Name", width: 200, editable: true  },
+        { field: "ro_name", headerName: "RO Name", width: 200, editable: true  },
+        { field: "all_dt", headerName: "Allocation Date", width: 150, editable: true  },
+        { field: "created_at", headerName: "Created At", width: 200, editable: true  },
+        { field: "updated_at", headerName: "Updated At", width: 200, editable: true  },
+        { field: "caller_id", headerName: "Caller ID", width: 150, editable: true  },
+        { field: "executive_id", headerName: "Executive ID", width: 150, editable: true  },
     ];    
 
     useEffect(() => {
@@ -181,7 +209,7 @@ const AllocationView = () => {
                             <Typography align="center">Loading...</Typography>
                         ) : (
                             <DataGrid
-                                rows={rows}
+                                rows={rowsWithSerialNumbers}
                                 columns={columns}
                                 loading={loading} // Managed in state
                                 rowCount={totalRows} // Total rows from the API
@@ -190,6 +218,19 @@ const AllocationView = () => {
                                 paginationModel={paginationModel}
                                 paginationMode="server"
                                 onPaginationModelChange={setPaginationModel}
+                                editMode="row"
+                                processRowUpdate={(updatedRow, originalRow) =>
+                                    mySaveOnServerFunction(updatedRow, originalRow)
+                                  }
+                                onProcessRowUpdateError={handleProcessRowUpdateError}
+                                checkboxSelection
+                                onRowSelectionModelChange={(newRowSelectionModel) => {
+                                    console.log('newRowSelectionModel',newRowSelectionModel);
+                                    // setRowSelectionModel(newRowSelectionModel);
+                                }}
+                                // rowSelectionModel={
+                                //     rowSelectionModel
+                                // }
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
                                         backgroundColor: '#f5f5f5',
