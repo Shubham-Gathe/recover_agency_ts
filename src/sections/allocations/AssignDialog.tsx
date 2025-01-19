@@ -30,10 +30,10 @@ interface AssignDialogProps {
   open: boolean;
   onClose: () => void;
   selectedRows: { id: number; [key: string]: any }[]; // Selected rows to assign
-  apiUrl: 'http://localhost:3001'; // Base API URL
+  refreshData: () => void;
 }
 
-const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows, apiUrl }) => {
+const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows, refreshData }) => {
   const [userType, setUserType] = useState<'caller' | 'executive'>('caller');
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -42,6 +42,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   const [error, setError] = useState('');
   const token = useSelector((state: RootState) => state.auth.token);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL
 
   // Fetch users from the API
   useEffect(() => {
@@ -112,7 +113,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
         {headers}
       ).then((response) => {
         console.log('assign response', response);
-        window.location.reload();
+        refreshData();
         setOpenErrorSnackbar(true);
         setTimeout(() => {
           setOpenErrorSnackbar(false);
