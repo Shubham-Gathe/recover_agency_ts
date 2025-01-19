@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AssignDialog from './AssignDialog';
 
 const AllocationView = () => {
-    const apiUrl = 'http://localhost:3001'
+    const apiUrl = import.meta.env.VITE_API_URL
    
     console.log("API URL:", apiUrl);
 

@@ -24,7 +24,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
-const apiUrl = 'http://localhost:3001'
+const apiUrl = import.meta.env.VITE_API_URL
 
 // Thunk for login
 export const login = createAsyncThunk<{ token: string; user: User }, { email: string; password: string }, { rejectValue: string }>(

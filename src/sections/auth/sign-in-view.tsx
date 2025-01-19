@@ -19,9 +19,8 @@ interface LoginFormValues {
   email: string;
   password: string;
 }
-
 export function SignInView() {
-  const apiUrl = 'http://localhost:3001'
+  const apiUrl = import.meta.env.VITE_API_URL
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate(); 

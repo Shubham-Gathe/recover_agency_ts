@@ -40,7 +40,7 @@ export function UserView() {
   const [users, setUsers] = useState<UserProps[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useSelector((state: RootState) => state.auth.token);
-  const apiUrl = 'http://localhost:3001'
+  const apiUrl = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const fetchUsers = async () => {
