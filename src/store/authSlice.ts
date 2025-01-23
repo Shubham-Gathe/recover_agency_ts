@@ -24,13 +24,14 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
+const apiUrl = import.meta.env.VITE_API_URL
 
 // Thunk for login
 export const login = createAsyncThunk<{ token: string; user: User }, { email: string; password: string }, { rejectValue: string }>(
   'auth/login',
   async (credentials, thunkAPI) => {
     try {
-      const response = await axios.post('http://16.171.247.65:3000/login', credentials, { timeout: 5000 });
+      const response = await axios.post(`${apiUrl}/login`, credentials, { timeout: 5000 });
       return response.data; // Assuming response has { token, user } structure
     } catch (error: any) {
       if (error.code === 'ECONNABORTED') {
@@ -47,7 +48,7 @@ export const addUser = createAsyncThunk<User, { name: string; email: string; pas
   'auth/addUser',
   async (userData, thunkAPI) => {
     try {
-      const response = await axios.post('http://16.171.247.65:3000/add_user', userData);
+      const response = await axios.post(`${apiUrl}/add_user`, userData);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to add user');
