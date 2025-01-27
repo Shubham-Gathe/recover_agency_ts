@@ -14,7 +14,6 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" }>({ message: "", severity: null });
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL
   const token = useSelector((state: RootState) => state.auth.token);
 
@@ -43,14 +42,14 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
         {
           headers: {
             Authorization: token,
-            'Content-Type': 'multipart/form-data',
-            'ngrok-skip-browser-warning': 'true',
+            'Content-Type': 'multipart/form-data'
           },
         }
       );
 
       if (response.status === 200) {
         setSnackbar({ message: response.data.message || "File imported successfully.", severity: "success" });
+        onClose();
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || "Something went wrong.";
@@ -58,7 +57,6 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
     } finally {
       setIsLoading(false);
       setOpenSnackbar(true);
-      setOpenDialog(false);
     }
   };
 

@@ -104,15 +104,13 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
 
     const headers = {
       Authorization: token,
-      'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true',
+      'Content-Type': 'application/json'
     }
     try {
       await axios.post(`${apiUrl}/allocation_drafts/assign_${endPoint}`,
         payload,
         {headers}
       ).then((response) => {
-        console.log('assign response', response);
         refreshData();
         setOpenErrorSnackbar(true);
         setTimeout(() => {
