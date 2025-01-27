@@ -17,6 +17,7 @@ import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import p
 import { useDispatch, useSelector } from "react-redux";
 import AssignDialog from './AssignDialog';
 import FloatingPanel from "./FloatingPanel";
+import ImportAllocation from "./ImportAllocation";
 
 const AllocationView = () => {
     const apiUrl = import.meta.env.VITE_API_URL
@@ -32,12 +33,13 @@ const AllocationView = () => {
     const [page, setPage] = useState(0); // Current page
     const [dialogOpen, setDialogOpen] = useState(false);
     const [RowSelectionModel,setRowSelectionModel] = useState();
+    const [openImportDialog, setOpenImportDialog] = useState(false) ;
     const [paginationModel, setPaginationModel] = React.useState({
         page: 0,
         pageSize: 10,
     });
     const defaultColumns: GridColDef[] = [
-        { field: "serialNumber", headerName: "Sr.No", width: 90 },
+        // { field: "serialNumber", headerName: "Sr.No", width: 90 },
         { field: "id", headerName: "ID", width: 90},
         { field: "customer_name", headerName: "Customer Name", width: 200, editable: true  },
         { field: "segment", headerName: "Segment", width: 150, editable: true  },
@@ -146,12 +148,16 @@ const AllocationView = () => {
     const handleProcessRowUpdateError = () => {
         console.log('-----------handleProcessRowUpdateError-----------');
     }
-    const rowsWithSerialNumbers = rows.map((row, index) => ({
-        ...row,
-        serialNumber: index + 1, // Add serial number (1-based index)
-    }));
+    // const rowsWithSerialNumbers = rows.map((row, index) => ({
+    //     ...row,
+    //     serialNumber: index + 1, // Add serial number (1-based index)
+    // }));
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
+
+    const handleImportDialog = () => setOpenImportDialog(true);
+    const handleCloseImportDialog = () => setOpenImportDialog(false);
+
     const fetchPage = async () => {
         try {
           const response = await axios.get(`${apiUrl}/allocation_drafts`, {
@@ -188,25 +194,34 @@ const AllocationView = () => {
                 visibleColumns={visibleColumns}
                 onChange={handleColumnVisibilityChange}
             />
+            
             <Box sx={{ p: 3 }}>
                 <Box display="flex" alignItems="center" mb={3}>
                     <Typography variant="h4" flexGrow={1}>
                         Allocations
                     </Typography>
                     <Button
+                        onClick={handleImportDialog}
                         variant="contained"
                         color="primary"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                         sx={{ textTransform: 'none', borderRadius: 2 }}
                     >
-                        New Allocation
+                        Import Allocation
                     </Button>
+                    
+                    <ImportAllocation
+                        open={openImportDialog}
+                        onClose={handleCloseImportDialog}
+                    />
+                    
                     <AssignDialog
                         open={dialogOpen}
                         onClose={handleCloseDialog}
                         selectedRows={RowSelectionModel}
                         refreshData={fetchPage}
                     />
+
                     <Button
                         onClick={handleOpenDialog}
                         variant="contained"
@@ -243,7 +258,7 @@ const AllocationView = () => {
                                 <Typography align="center">Loading...</Typography>
                             ) : (
                                 <DataGrid
-                                    rows={rowsWithSerialNumbers}
+                                    rows={rows}
                                     columns={visibleColumns}
                                     loading={loading} // Managed in state
                                     rowCount={totalRows} // Total rows from the API

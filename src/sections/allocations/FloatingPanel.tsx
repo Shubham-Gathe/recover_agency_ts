@@ -1,5 +1,7 @@
-import React from 'react';
+import React from "react";
 import Draggable from "react-draggable";
+import { Filter } from "lucide-react"; // Import the filter icon
+
 interface FloatingPanelProps {
   defaultColumns: { field: string; headerName: string }[];
   visibleColumns: { field: string; headerName: string }[];
@@ -10,49 +12,93 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({ defaultColumns, visibleCo
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const toggleExpand = () => {
-      setIsExpanded((prev) => !prev);
+    setIsExpanded((prev) => !prev);
   };
+
   return (
     <Draggable>
-        <div
+      <div
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 99,
+          overflow: "hidden",
+        }}
+      >
+        {/* Floating Button */}
+        {!isExpanded && (
+          <button
+            onClick={toggleExpand}
             style={{
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                padding: "10px",
-                width: isExpanded ? "600px" : "300px", // Adjust width based on expanded state
-                height: isExpanded ? "400px" : "40px", // Adjust height based on expanded state
-                backgroundColor: "#fff",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
-                cursor: "move", // Show drag cursor
-                overflow: "hidden",
-                position: "absolute",
-                zIndex: 99
+              backgroundColor: "#007bff",
+              border: "none",
+              borderRadius: "50%",
+              width: "60px",
+              height: "60px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#fff",
             }}
-        >
-            <button onClick={toggleExpand}>
-                {isExpanded ? "Collapse" : "Expand"}
+          >
+            <Filter size={24} />
+          </button>
+        )}
+
+        {/* Expandable Panel */}
+        {isExpanded && (
+          <div
+            style={{
+              width: "300px",
+              height: "400px",
+              backgroundColor: "#fff",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+              padding: "16px",
+              position: "relative",
+              cursor: "default",
+              overflowY: 'scroll' 
+            }}
+          >
+            <button
+              onClick={toggleExpand}
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <Filter size={24} style={{ color: "#333" }} />
             </button>
-            <div style={{
-                    height: "100%",
-                    overflow: "scroll"
-                  }}>
-              {/* <div style={{ position: 'absolute', top: 50, right: 20, width: '300px', background: '#f4f4f4', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}> */}
-                <h4>Manage Columns</h4>
-                {defaultColumns.map((col) => (
-                  <div key={col.field}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.some((visibleCol) => visibleCol.field === col.field)}
-                        onChange={(e) => onChange(col.field, e.target.checked)}
-                      />
-                      {col.headerName}
-                    </label>
-                  </div>
-                ))}
-              {/* </div> */}
+
+            <div style={{ marginTop: "40px" }}>
+              <h4 style={{ marginBottom: "16px", fontWeight: "bold", fontSize: "18px" }}>
+                Manage Columns
+              </h4>
+              {defaultColumns.map((col) => (
+                <div key={col.field} style={{ marginBottom: "8px" }}>
+                  <label style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="checkbox"
+                      style={{ marginRight: "8px" }}
+                      checked={visibleColumns.some(
+                        (visibleCol) => visibleCol.field === col.field
+                      )}
+                      onChange={(e) => onChange(col.field, e.target.checked)}
+                    />
+                    {col.headerName}
+                  </label>
+                </div>
+              ))}
             </div>
-        </div>
+          </div>
+        )}
+      </div>
     </Draggable>
   );
 };
