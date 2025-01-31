@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from 'src/store/authSlice'; // Adjust the import path
-import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
+import { login } from 'src/store/authSlice';
+import { RootState, AppDispatch } from 'src/store/store';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -10,42 +11,38 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import Snackbar from '@mui/material/Snackbar'; // Import Snackbar for error display
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert'; // ✅ Improved Error UI
 import { Iconify } from 'src/components/iconify';
-import process from "process";
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
-export function SignInView() {
-  const apiUrl = import.meta.env.VITE_API_URL
 
+export function SignInView() {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate(); 
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);  
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false); 
+  const navigate = useNavigate();
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>();
 
   const onSubmit: SubmitHandler<LoginFormValues> = (data) => {
-    dispatch(login(data)); 
+    dispatch(login(data));
   };
 
   useEffect(() => {
     if (error) {
       setOpenErrorSnackbar(true);
-      setTimeout(() => {
-        setOpenErrorSnackbar(false);
-      }, 3000);
     }
+
     if (isAuthenticated) {
-      console.log('dashboard auth true');
-      navigate('/dashboard'); 
+      navigate('/dashboard');
     }
-  }, [error, isAuthenticated, navigate]); 
+  }, [error, isAuthenticated, navigate]);
 
   return (
     <>
@@ -55,14 +52,15 @@ export function SignInView() {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box display="flex" flexDirection="column" alignItems="flex-end">
-          {/* Username Field */}
+          {/* Email Field (Auto Focus) */}
           <TextField
-            {...register('email', { required: 'email is required' })}
+            {...register('email', { required: 'Email is required' })}
             fullWidth
-            label="User Name"
+            label="Email"
             InputLabelProps={{ shrink: true }}
             error={!!errors.email}
             helperText={errors.email?.message}
+            autoFocus
             sx={{ mb: 3 }}
           />
 
@@ -95,7 +93,7 @@ export function SignInView() {
             fullWidth
             size="large"
             type="submit"
-            color="inherit"
+            color="primary"
             variant="contained"
             loading={loading}
           >
@@ -104,19 +102,21 @@ export function SignInView() {
         </Box>
       </form>
 
-      {/* Error Snackbar */}
-      <Snackbar
-        open={openErrorSnackbar}
-        autoHideDuration={3000} // Automatically hide after 3 seconds
+      {/* Error Snackbar - Improved UI */}
+      <Snackbar 
+        open={openErrorSnackbar} 
+        autoHideDuration={3000} 
         onClose={() => setOpenErrorSnackbar(false)}
-        message={error} // Display the error message
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        sx={{
-          backgroundColor: '', // Error background color
-          color: 'error', // White text color
-          borderRadius: 1,
-        }}
-      />
+      >
+        <Alert 
+          severity="error" 
+          sx={{ width: '100%' }} 
+          onClose={() => setOpenErrorSnackbar(false)}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

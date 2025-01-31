@@ -16,35 +16,64 @@ interface AuthState {
   error: string | null;
 }
 
+const getTokenExpiration = () => {
+  const expiration = localStorage.getItem('tokenExpiration');
+  return expiration ? parseInt(expiration, 10) : null;
+};
+
+const isTokenExpired = () => {
+  const expiration = getTokenExpiration();
+  return expiration ? Date.now() > expiration : true;
+};
+
 const initialState: AuthState = {
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token') && !isTokenExpired(),
   user: null,
   users: [],
-  token: null,
+  token: localStorage.getItem('token') && !isTokenExpired() ? localStorage.getItem('token') : null,
   loading: false,
   error: null,
 };
-const apiUrl = import.meta.env.VITE_API_URL
 
-// Thunk for login
-export const login = createAsyncThunk<{ token: string; user: User }, { email: string; password: string }, { rejectValue: string }>(
+const apiUrl = import.meta.env.VITE_API_URL;
+
+const setToken = (token: string) => {
+  const expirationTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  localStorage.setItem('token', token);
+  localStorage.setItem('tokenExpiration', expirationTime.toString());
+};
+
+const removeToken = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('tokenExpiration');
+};
+
+export const login = createAsyncThunk<
+  { token: string; user: User },
+  { email: string; password: string },
+  { rejectValue: string }
+>(
   'auth/login',
   async (credentials, thunkAPI) => {
     try {
       const response = await axios.post(`${apiUrl}/login`, credentials, { timeout: 5000 });
-      return response.data; // Assuming response has { token, user } structure
+      const { token, user } = response.data;
+      setToken(token);
+      return { token, user };
     } catch (error: any) {
       if (error.code === 'ECONNABORTED') {
         return thunkAPI.rejectWithValue('Request timed out');
       }
-      return thunkAPI.rejectWithValue(error.response?.message || 'Login failed');
+      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Login failed');
     }
   }
 );
 
-
-// Thunk for adding a user
-export const addUser = createAsyncThunk<User, { name: string; email: string; password: string; role: string }, { rejectValue: string }>(
+export const addUser = createAsyncThunk<
+  User,
+  { name: string; email: string; password: string; role: string },
+  { rejectValue: string }
+>(
   'auth/addUser',
   async (userData, thunkAPI) => {
     try {
@@ -60,7 +89,12 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => initialState,
+    logout: (state) => {
+      removeToken();
+      state.isAuthenticated = false;
+      state.user = null;
+      state.token = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -95,4 +129,3 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
-
