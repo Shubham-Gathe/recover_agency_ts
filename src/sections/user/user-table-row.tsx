@@ -18,7 +18,7 @@ export type UserProps = {
   id: string;
   name: string;
   email: string;
-  type: string;
+  role: string;
   avatar?: string;
   password?: string | null;
 };
@@ -64,7 +64,7 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete, ava
 
         <TableCell>{row.email}</TableCell>
 
-        <TableCell>{row.type.replace("UserBlock::", "")}</TableCell>
+        <TableCell>{row.role}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
