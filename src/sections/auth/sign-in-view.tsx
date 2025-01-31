@@ -23,7 +23,7 @@ interface LoginFormValues {
 export function SignInView() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { loading, error, isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
@@ -40,7 +40,11 @@ export function SignInView() {
     }
 
     if (isAuthenticated) {
-      navigate('/dashboard');
+      console.log('user  >> ', user);
+      // if(user?.role === 'Admin') {
+        navigate('/dashboard');
+      // }
+      
     }
   }, [error, isAuthenticated, navigate]);
 

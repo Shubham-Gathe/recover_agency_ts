@@ -22,8 +22,8 @@ import { UserProps } from '../user/user-table-row';
 interface User {
   id: number;
   name: string;
-  email: string;
-  type: string;
+  email?: string;
+  role?: string;
 }
 
 interface AssignDialogProps {
@@ -73,7 +73,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   useEffect(() => {
     setFilteredUsers(
       users.filter((user) =>
-        userType === 'caller' ? user.type.includes('Caller') : user.type.includes('Executive')
+        userType === 'caller' ? user.role.includes('Caller') : user.role.includes('Executive')
       )
     );
     setSelectedUser(null); // Reset the selected user when user type changes

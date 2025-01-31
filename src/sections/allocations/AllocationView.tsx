@@ -24,13 +24,11 @@ const AllocationView = () => {
     
     console.log("API URL:", apiUrl);
     
-    const dispatch = useDispatch<AppDispatch>();
     const token = useSelector((state: RootState) => state.auth.token);
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
     const [totalRows, setTotalRows] = useState(0);
-    const [page, setPage] = useState(0); // Current page
     const [dialogOpen, setDialogOpen] = useState(false);
     const [RowSelectionModel,setRowSelectionModel] = useState();
     const [openImportDialog, setOpenImportDialog] = useState(false) ;
