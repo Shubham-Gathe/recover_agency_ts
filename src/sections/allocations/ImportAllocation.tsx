@@ -3,6 +3,7 @@ import axios from "axios";
 import { Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "src/store/store";
+import api from "src/utils/api";
 
 interface ImportAllocation {
   open: boolean;
@@ -14,8 +15,6 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" }>({ message: "", severity: null });
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL
-  const token = useSelector((state: RootState) => state.auth.token);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -36,13 +35,13 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/allocation_drafts/import_allocation`,
+      const response = await api.post(
+        `/allocation_drafts/import_allocation`,
         formData,
         {
           headers: {
-            Authorization: token,
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            'ngrok-skip-browser-warning': 'true',
           },
         }
       );

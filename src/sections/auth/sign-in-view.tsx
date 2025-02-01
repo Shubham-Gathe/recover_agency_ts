@@ -40,11 +40,7 @@ export function SignInView() {
     }
 
     if (isAuthenticated) {
-      console.log('user  >> ', user);
-      // if(user?.role === 'Admin') {
-        navigate('/dashboard');
-      // }
-      
+        navigate('/dashboard');      
     }
   }, [error, isAuthenticated, navigate]);
 

@@ -8,23 +8,17 @@ import {
     Typography,
     TextField,
     TableContainer,
-    TablePagination,
 } from "@mui/material";
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
-import axios from "axios";
-import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
+import { RootState, AppDispatch } from 'src/store/store';
 import { useDispatch, useSelector } from "react-redux";
 import AssignDialog from './AssignDialog';
 import FloatingPanel from "./FloatingPanel";
 import ImportAllocation from "./ImportAllocation";
+import api from "src/utils/api";
 
 const AllocationView = () => {
-    const apiUrl = import.meta.env.VITE_API_URL
-    
-    console.log("API URL:", apiUrl);
-    
-    const token = useSelector((state: RootState) => state.auth.token);
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
@@ -123,26 +117,22 @@ const AllocationView = () => {
         }));
     };
 
-    const mySaveOnServerFunction = async(updatedRow: any, originalRow: any) => {
+    const mySaveOnServerFunction = async (updatedRow: any, originalRow: any) => {
         console.log('updatedRow', updatedRow);
         try {
-            const response = await axios.put(`${apiUrl}/allocation_drafts/${updatedRow.id}`, {
-                data: updatedRow
-            },
-            {
+            const response = await api.put(`/allocation_drafts/${updatedRow.id}`, {'data': updatedRow}, {
                 headers: {
-                    Authorization: token,
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
                 }
-
-            }).then ((response) => {
-                console.log('response------------------', response);
             });
+            return response.data; // Return response if needed
         } catch (error) {
-            console.log('error', error);
+            console.error('Error updating row:', error);
+            throw error; // Ensure error is thrown for better handling
         }
-    }
+    };
+
     const handleProcessRowUpdateError = () => {
         console.log('-----------handleProcessRowUpdateError-----------');
     }
@@ -158,24 +148,20 @@ const AllocationView = () => {
 
     const fetchPage = async () => {
         try {
-          const response = await axios.get(`${apiUrl}/allocation_drafts`, {
-            headers: {
-                Authorization: token,
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true',
-            },
+          const response = await api.get('/allocation_drafts', {
             params: {
               page: paginationModel.page + 1, // API is 1-indexed
               per_page: paginationModel.pageSize,
             },
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
           });
-    
+      
           const { data, metadata } = response.data; // Assuming response includes data and metadata
           setTotalRows(metadata.total);
-          console.log('data', data);
-          console.log('metadata', metadata);
           setRows(data); // Set the data to be displayed in the DataGrid
-           // Set total number of rows for pagination
         } catch (error) {
           console.error('Error fetching data:', error);
         }
