@@ -4,36 +4,27 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   Box,
   Card,
-  Button,
   Typography,
   TextField,
   TableContainer,
-  TablePagination,
 } from "@mui/material";
-import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
 import axios from "axios";
 import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
 import { useDispatch, useSelector } from "react-redux";
-import AssignDialog from './AssignDialog';
 import FloatingPanel from "./FloatingPanel";
-import ImportAllocation from "./ImportAllocation";
+import api from "src/utils/api";
 
 const MyAllocationView = () => {
   const apiUrl = import.meta.env.VITE_API_URL
 
   console.log("API URL:", apiUrl);
 
-  const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.auth.token);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
   const [totalRows, setTotalRows] = useState(0);
-  const [page, setPage] = useState(0); // Current page
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [RowSelectionModel, setRowSelectionModel] = useState();
-  const [openImportDialog, setOpenImportDialog] = useState(false);
   const [paginationModel, setPaginationModel] = React.useState({
     page: 0,
     pageSize: 10,
@@ -125,44 +116,10 @@ const MyAllocationView = () => {
     }));
   };
 
-  const mySaveOnServerFunction = async (updatedRow: any, originalRow: any) => {
-    console.log('updatedRow', updatedRow);
-    try {
-      const response = await axios.put(`${apiUrl}/allocation_drafts/${updatedRow.id}`, {
-        data: updatedRow
-      },
-        {
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true',
-          }
-
-        }).then((response) => {
-          console.log('response------------------', response);
-        });
-    } catch (error) {
-      console.log('error', error);
-    }
-  }
-  const handleProcessRowUpdateError = () => {
-    console.log('-----------handleProcessRowUpdateError-----------');
-  }
-  // const rowsWithSerialNumbers = rows.map((row, index) => ({
-  //     ...row,
-  //     serialNumber: index + 1, // Add serial number (1-based index)
-  // }));
-  const handleOpenDialog = () => setDialogOpen(true);
-  const handleCloseDialog = () => setDialogOpen(false);
-
-  const handleImportDialog = () => setOpenImportDialog(true);
-  const handleCloseImportDialog = () => setOpenImportDialog(false);
-
   const fetchPage = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/dashboards/get_allocations`, {
+      const response = await api.get(`${apiUrl}/dashboards/get_allocations`, {
         headers: {
-          Authorization: token,
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
         },
@@ -231,19 +188,7 @@ const MyAllocationView = () => {
                   paginationMode="server"
                   onPaginationModelChange={setPaginationModel}
                   editMode="row"
-                  processRowUpdate={(updatedRow, originalRow) =>
-                    mySaveOnServerFunction(updatedRow, originalRow)
-                  }
-                  onProcessRowUpdateError={handleProcessRowUpdateError}
                   checkboxSelection
-                  // onRowSelectionModelChange={(newRowSelectionModel) => {
-                  //   console.log('newRowSelectionModel', newRowSelectionModel);
-
-                  //   setRowSelectionModel(newRowSelectionModel);
-                  // }}
-                  // rowSelectionModel={
-                  //     rowSelectionModel
-                  // }
                   sx={{
                     '& .MuiDataGrid-columnHeaders': {
                       backgroundColor: '#f5f5f5',
