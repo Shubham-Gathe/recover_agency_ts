@@ -40,12 +40,13 @@ export function UserView() {
   const [users, setUsers] = useState<UserProps[]>([]);
   const [loading, setLoading] = useState(true);
   const token = useSelector((state: RootState) => state.auth.token);
+  const apiUrl = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>('http://16.171.247.65:3000/user_block/users', {
+        const response = await axios.get<ApiResponse>(`${apiUrl}/user_block/users`, {
           headers: {
             Authorization: token,
             'Content-Type': 'application/json',
