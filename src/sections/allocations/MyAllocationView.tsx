@@ -14,6 +14,7 @@ import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import p
 import { useDispatch, useSelector } from "react-redux";
 import FloatingPanel from "./FloatingPanel";
 import api from "src/utils/api";
+import ExportAllocation from "./ExportAllocation";
 
 const MyAllocationView = () => {
   const apiUrl = import.meta.env.VITE_API_URL
@@ -151,6 +152,14 @@ const MyAllocationView = () => {
         visibleColumns={visibleColumns}
         onChange={handleColumnVisibilityChange}
       />
+      <Box sx={{ p: 1 }}>
+        <Box display="flex" alignItems="center" mb={3}>
+          <Typography variant="h4" flexGrow={1}>
+            My Allocations
+          </Typography>
+          <ExportAllocation />
+        </Box>
+      </Box>
 
       <Box sx={{ p: 3 }}>
         <Card sx={{ p: 2 }}>

@@ -17,6 +17,7 @@ import AssignDialog from './AssignDialog';
 import FloatingPanel from "./FloatingPanel";
 import ImportAllocation from "./ImportAllocation";
 import api from "src/utils/api";
+import ExportAllocation from "./ExportAllocation";
 
 const AllocationView = () => {
     const [rows, setRows] = useState([]);
@@ -212,9 +213,10 @@ const AllocationView = () => {
                         color="primary"
                         startIcon={<Iconify icon="mingcute:add-line" />}
                         sx={{ textTransform: 'none', borderRadius: 2 }}
-                    >
+                        >
                         Assign
                     </Button>
+                    <ExportAllocation/>
                 </Box>
 
                 <Card sx={{ p: 2 }}>

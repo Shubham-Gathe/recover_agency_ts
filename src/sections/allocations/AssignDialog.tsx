@@ -103,14 +103,9 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
       endPoint = 'executive';
     }
 
-    const headers = {
-      Authorization: token,
-      'Content-Type': 'application/json'
-    }
     try {
       const response = await api.post(`/allocation_drafts/assign_${endPoint}`,
-        payload,
-        {headers}
+        payload
       )
         refreshData();
         setOpenErrorSnackbar(true);
