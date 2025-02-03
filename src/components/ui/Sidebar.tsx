@@ -15,9 +15,14 @@ const Sidebar: React.FC = () => {
                 <ul>
                     <li><Link to="/">Home</Link></li>
                     <li><Link to="/settings">Settings</Link></li>
-                    <li><Link to="/add-user">Add User</Link></li>
                     <li><Link to="/allocations">Allocations</Link></li>
-                    {userRole === 'admin' && <li><Link to="/all-users">All Users</Link></li>}
+                    {
+                        userRole === 'Admin' && 
+                        <>
+                            <li><Link to="/add-user">Add User</Link></li>
+                            <li><Link to="/all-users">All Users</Link></li>
+                        </>
+                    }
                 </ul>
             </nav>
         </div>

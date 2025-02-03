@@ -7,6 +7,7 @@ import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
 import Allocations from 'src/pages/allocations'
+import MyAllocations from 'src/pages/my-allocations'
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));
@@ -65,7 +66,8 @@ export function Router() {
         { path: '/dashboard', element: <HomePage />, index: true },
         { path: '/dashboard/user', element: <UserPage /> },
         { path: '/dashboard/products', element: <ProductsPage /> },
-        { path:'dashboard/allocations',element: <Allocations/>}
+        { path:'dashboard/allocations',element: <Allocations/>},
+        { path:'dashboard/my-allocations',element: <MyAllocations/>}
       ],
     },
     {

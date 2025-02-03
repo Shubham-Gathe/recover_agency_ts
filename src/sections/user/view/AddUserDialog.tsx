@@ -23,7 +23,7 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
         id: '',
         name: '',
         email: '',
-        type: 'UserBlock::Executive', // Default type
+        role: 'Executive', // Default type
         password: '', // Add password to the state
     });
 
@@ -39,7 +39,7 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
     };
 
     const addUser = async () => {
-        const postUser = {...newUser,type:newUser.type.toLocaleLowerCase().replace('userblock::','')}
+        const postUser = {...newUser,type:newUser.role}
         try {
             await axios.post('http://16.171.247.65:3000/sign_up', postUser);
         } catch (error) {
@@ -65,7 +65,7 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
                 id: '',
                 name: '',
                 email: '',
-                type: 'UserBlock::Executive',
+                role: 'Executive',
                 password: '', // Reset the password field
             });
         }
@@ -96,9 +96,9 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
                     select
                     margin="dense"
                     name="type"
-                    label="Type"
+                    label="Role"
                     fullWidth
-                    value={newUser.type}
+                    value={newUser.role}
                     onChange={handleChange}
                 >
                     <MenuItem value="UserBlock::Admin">Admin</MenuItem>

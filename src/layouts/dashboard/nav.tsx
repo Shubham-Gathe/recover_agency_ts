@@ -24,8 +24,8 @@ import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
 
 export type NavContentProps = {
   data: {
-    path: string;
     title: string;
+    path: string;
     icon: React.ReactNode;
     info?: React.ReactNode;
   }[];

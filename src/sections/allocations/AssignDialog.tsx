@@ -14,16 +14,18 @@ import {
   Autocomplete,
   TextField,
   Snackbar,
+  Alert,
 } from '@mui/material';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { UserProps } from '../user/user-table-row';
+import api from 'src/utils/api';
 
 interface User {
   id: number;
   name: string;
-  email: string;
-  type: string;
+  email?: string;
+  role?: string;
 }
 
 interface AssignDialogProps {
@@ -51,9 +53,8 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${apiUrl}/user_block/users`, {
+        const response = await api.get(`/user_block/users`, {
           headers: {
-            Authorization: token,
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true',
           },
@@ -73,7 +74,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   useEffect(() => {
     setFilteredUsers(
       users.filter((user) =>
-        userType === 'caller' ? user.type.includes('Caller') : user.type.includes('Executive')
+        (user && userType === 'caller') ? user.role.includes('Caller') : user.role.includes('Executive')
       )
     );
     setSelectedUser(null); // Reset the selected user when user type changes
@@ -102,22 +103,23 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
       endPoint = 'executive';
     }
 
-    const headers = {
-      Authorization: token,
-      'Content-Type': 'application/json'
-    }
     try {
-      await axios.post(`${apiUrl}/allocation_drafts/assign_${endPoint}`,
-        payload,
-        {headers}
-      ).then((response) => {
+      const response = await api.post(`/allocation_drafts/assign_${endPoint}`,
+        payload
+      )
         refreshData();
         setOpenErrorSnackbar(true);
         setTimeout(() => {
           setOpenErrorSnackbar(false);
         }, 3000);
-        setError(response.data.message);
-      });
+        <Alert 
+          severity="error" 
+          sx={{ width: '100%' }} 
+          onClose={() => setOpenErrorSnackbar(false)}
+        >
+          {response.data.message}
+        </Alert>
+      
       onClose();
     } catch (err) {
       setError(err);
