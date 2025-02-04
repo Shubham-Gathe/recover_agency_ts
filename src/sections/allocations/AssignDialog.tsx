@@ -74,6 +74,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   useEffect(() => {
     setFilteredUsers(
       users.filter((user) =>
+      // @ts-ignore
         (user && userType === 'caller') ? user.role.includes('Caller') : user.role.includes('Executive')
       )
     );

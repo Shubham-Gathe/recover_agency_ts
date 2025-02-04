@@ -10,6 +10,7 @@ interface ImportAllocation {
 const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  // @ts-expect-error
   const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" }>({ message: "", severity: null });
   const [openSnackbar, setOpenSnackbar] = useState(false);
 

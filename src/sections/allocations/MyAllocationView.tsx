@@ -1,27 +1,72 @@
 // import { useQueryClient } from 'react-query';
 import React, { useState, useEffect } from "react";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import {
   Box,
   Card,
   Typography,
-  TextField,
   TableContainer,
+  Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import axios from "axios";
-import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
-import { useDispatch, useSelector } from "react-redux";
 import FloatingPanel from "./FloatingPanel";
 import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
+import Allocation from "./Allocation";
+import { Iconify } from "src/components/iconify";
+interface RowData {
+  id: number;
+  segment: string;
+  pool: string;
+  branch: string;
+  agreement_id: string;
+  customer_name: string;
+  pro: string;
+  bkt: string;
+  fos_name: string;
+  fos_mobile_no: string | null;
+  caller_name: string;
+  caller_mo_number: string | null;
+  f_code: string | null;
+  ptp_date: string | null;
+  feedback: string | null;
+  res: string;
+  emi_coll: number;
+  cbc_coll: number;
+  total_coll: number;
+  fos_id: string | null;
+  mobile: string;
+  address: string;
+  zipcode: string;
+  phone1: string;
+  phone2: string;
+  loan_amt: number;
+  pos: string;
+  emi_amt: number;
+  emi_od_amt: number;
+  bcc_pending: string;
+  penal_pending: string;
+  cycle: number;
+  tenure: number;
+  disb_date: string | null;
+  emi_start_date: string | null;
+  emi_end_date: string | null;
+  manufacturer_desc: string;
+  asset_cat: string;
+  supplier: string;
+  system_bounce_reason: string;
+  reference1_name: string;
+  reference2_name: string;
+  so_name: string;
+  ro_name: string;
+  all_dt: string;
+  created_at: string;
+  updated_at: string;
+  caller_id: number;
+  executive_id: number | null;
+}
 
 const MyAllocationView = () => {
-  const apiUrl = import.meta.env.VITE_API_URL
-
-  console.log("API URL:", apiUrl);
-
-  const token = useSelector((state: RootState) => state.auth.token);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
@@ -90,6 +135,7 @@ const MyAllocationView = () => {
   const [visibleColumns, setVisibleColumns] = useState(
     defaultColumns.filter((col) => columnVisibility[col.field] !== false) // Initially, filter visible columns based on columnVisibility
   );
+  const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
 
   useEffect(() => {
     // Update visible columns whenever columnVisibility changes
@@ -109,17 +155,17 @@ const MyAllocationView = () => {
       return updatedVisibility;
     });
   };
+  const handleShowDetails = (params: GridRowParams) => {
+    setSelectedRow(params.row); // Show detailed allocation view
+  };
 
-  const handleFilterChange = (field: string, value: string | null) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: value,
-    }));
+  const handleBackToTable = () => {
+    setSelectedRow(null); // Reset selected row to show the table again
   };
 
   const fetchPage = async () => {
     try {
-      const response = await api.get(`${apiUrl}/dashboards/get_allocations`, {
+      const response = await api.get(`/dashboards/get_allocations`, {
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
@@ -132,8 +178,6 @@ const MyAllocationView = () => {
 
       const { data, metadata, message } = response.data; // Assuming response includes data and metadata
       setTotalRows(metadata.total);
-      console.log('data', data);
-      console.log('metadata', metadata);
       setRows(data); // Set the data to be displayed in the DataGrid
       // Set total number of rows for pagination
     } catch (error) {
@@ -148,7 +192,9 @@ const MyAllocationView = () => {
     <>
       {/* Column Visibility Panel */}
       <FloatingPanel
+        // @ts-expect-error
         defaultColumns={defaultColumns}
+        // @ts-expect-error
         visibleColumns={visibleColumns}
         onChange={handleColumnVisibilityChange}
       />
@@ -160,59 +206,65 @@ const MyAllocationView = () => {
           <ExportAllocation />
         </Box>
       </Box>
-
-      <Box sx={{ p: 3 }}>
+      {selectedRow ? (
+        // Show Allocation component when a row is selected
         <Card sx={{ p: 2 }}>
-          {/* Filter Section */}
-          <Box display="flex" gap={2} mb={3}>
-            <TextField
-              label="Filter by Name"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={(e) => handleFilterChange("name", e.target.value)}
-            />
-            <TextField
-              label="Filter by Email"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={(e) => handleFilterChange("email", e.target.value)}
-            />
-          </Box>
-
-          <Scrollbar>
-            <TableContainer>
-              {loading ? (
-                <Typography align="center">Loading...</Typography>
-              ) : (
-                <DataGrid
-                  rows={rows}
-                  columns={visibleColumns}
-                  loading={loading} // Managed in state
-                  rowCount={totalRows} // Total rows from the API
-                  pagination
-                  pageSizeOptions={[5]}
-                  paginationModel={paginationModel}
-                  paginationMode="server"
-                  onPaginationModelChange={setPaginationModel}
-                  editMode="row"
-                  checkboxSelection
-                  sx={{
-                    '& .MuiDataGrid-columnHeaders': {
-                      backgroundColor: '#f5f5f5',
-                      fontWeight: 'bold',
-                    },
-                    '& .MuiDataGrid-cell': {
-                      borderBottom: '1px solid #e0e0e0',
-                    },
-                  }}
-                />
-              )}
-            </TableContainer>
-          </Scrollbar>
+          <Button
+            onClick={handleBackToTable}
+            variant="outlined"
+            startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
+            sx={{ mb: 2 }}
+          >
+            Back to Allocations
+          </Button>
+          <Allocation row={selectedRow} />
         </Card>
-      </Box>
+      ) : (
+        <Box sx={{ p: 3 }}>
+          <Card sx={{ p: 2 }}>
+            <Scrollbar>
+              <TableContainer>
+                {loading ? (
+                  <Typography align="center">Loading...</Typography>
+                ) : (
+                  <DataGrid
+                    rows={rows}
+                    columns={visibleColumns}
+                    loading={loading} // Managed in state
+                    rowCount={totalRows} // Total rows from the API
+                    pagination
+                    pageSizeOptions={[5]}
+                    paginationModel={paginationModel}
+                    paginationMode="server"
+                    onPaginationModelChange={setPaginationModel}
+                    onRowClick={handleShowDetails}
+                    sx={{
+                      '& .MuiDataGrid-columnHeaders': {
+                        backgroundColor: '#f5f5f5',
+                        fontWeight: 'bold',
+                      },
+                      '& .MuiDataGrid-cell': {
+                        borderBottom: '1px solid #e0e0e0',
+                      },
+                    }}
+                    slotProps={{
+                      loadingOverlay: {
+                        variant: 'skeleton',
+                        noRowsVariant: 'skeleton',
+                      },
+                    }}
+                    initialState={{
+                      // pinnedColumns: {
+                      //   left: ['desk'],
+                      // },
+                    }}
+                  />
+                )}
+              </TableContainer>
+            </Scrollbar>
+          </Card>
+        </Box>
+      )}
     </>
   );
 };
