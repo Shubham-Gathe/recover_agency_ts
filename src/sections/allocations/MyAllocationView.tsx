@@ -69,7 +69,6 @@ interface RowData {
 const MyAllocationView = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
   const [totalRows, setTotalRows] = useState(0);
   const [paginationModel, setPaginationModel] = React.useState({
     page: 0,
@@ -187,7 +186,7 @@ const MyAllocationView = () => {
 
   useEffect(() => {
     fetchPage();
-  }, [filters, paginationModel]);
+  }, [paginationModel]);
   return (
     <>
       {/* Column Visibility Panel */}
@@ -239,6 +238,8 @@ const MyAllocationView = () => {
                     onPaginationModelChange={setPaginationModel}
                     onRowClick={handleShowDetails}
                     sx={{
+                      height: '70vh',
+                      width: "100%",
                       '& .MuiDataGrid-columnHeaders': {
                         backgroundColor: '#f5f5f5',
                         fontWeight: 'bold',

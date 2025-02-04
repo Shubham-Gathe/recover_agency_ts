@@ -375,6 +375,7 @@ const AllocationView = () => {
                         setRowSelectionModel(newRowSelectionModel);
                       }}
                       sx={{
+                        height: '70vh',
                         minWidth: "100%",
                         '& .MuiDataGrid-columnHeaders': {
                           backgroundColor: '#f5f5f5',
