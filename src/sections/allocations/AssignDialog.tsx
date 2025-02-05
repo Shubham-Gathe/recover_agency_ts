@@ -42,7 +42,6 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const token = useSelector((state: RootState) => state.auth.token);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL
 

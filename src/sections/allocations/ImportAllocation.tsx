@@ -5,9 +5,10 @@ import api from "src/utils/api";
 interface ImportAllocation {
   open: boolean;
   onClose: () => void;
+  refreshData: () => void;
 }
 
-const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
+const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose, refreshData}) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // @ts-expect-error
@@ -46,6 +47,7 @@ const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose}) => {
 
       if (response.status === 200) {
         setSnackbar({ message: response.data.message || "File imported successfully.", severity: "success" });
+        refreshData();
         onClose();
       }
     } catch (error: any) {

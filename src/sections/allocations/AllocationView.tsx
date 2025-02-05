@@ -414,6 +414,7 @@ const AllocationView = () => {
       <ImportAllocation
         open={openImportDialog}
         onClose={handleCloseImportDialog}
+        refreshData={fetchPage}
       />
 
       <AssignDialog
