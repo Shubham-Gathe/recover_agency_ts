@@ -1,7 +1,6 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
-
 import { useState, useCallback } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -11,9 +10,7 @@ import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
-import { useDispatch } from 'react-redux';
 import { useRouter, usePathname } from 'src/routes/hooks';
-import { _myAccount } from 'src/_mock';
 import { logout } from '../../store/authSlice';
 
 // ----------------------------------------------------------------------
@@ -28,14 +25,12 @@ export type AccountPopoverProps = IconButtonProps & {
 };
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
-  const dispathch = useDispatch();
-
-  const handleLogout = () =>{
-    dispathch(logout());
-  } 
+  const dispatch = useDispatch();
   const router = useRouter();
-
   const pathname = usePathname();
+  
+  // Access user data from the Redux store
+  const user = useSelector((state: any) => state.auth.user);
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
@@ -55,6 +50,10 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <>
       <IconButton
@@ -69,8 +68,8 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         }}
         {...other}
       >
-        <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
+        <Avatar src={user?.photoURL} alt={user?.name} sx={{ width: 1, height: 1 }}>
+          {user?.name?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -88,11 +87,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            {user?.name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+            {user?.email}
           </Typography>
         </Box>
 
