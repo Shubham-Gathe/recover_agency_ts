@@ -14,6 +14,7 @@ import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
 import Allocation from "./Allocation";
 import { Iconify } from "src/components/iconify";
+import FeedbackDialog from "./FeedbackDialog";
 interface RowData {
   id: number;
   segment: string;
@@ -135,6 +136,7 @@ const MyAllocationView = () => {
     defaultColumns.filter((col) => columnVisibility[col.field] !== false) // Initially, filter visible columns based on columnVisibility
   );
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
+  const [openFeedbackDialog, setOpenFeedbackDialog] = useState(false);
 
   useEffect(() => {
     // Update visible columns whenever columnVisibility changes
@@ -161,6 +163,9 @@ const MyAllocationView = () => {
   const handleBackToTable = () => {
     setSelectedRow(null); // Reset selected row to show the table again
   };
+
+  const handleImportDialog = () => setOpenFeedbackDialog(true);
+  const handleCloseImportDialog = () => setOpenFeedbackDialog(false);
 
   const fetchPage = async () => {
     try {
@@ -213,9 +218,20 @@ const MyAllocationView = () => {
             variant="outlined"
             startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
             sx={{ mb: 2 }}
+            style={{ margin: '5px' }}
           >
             Back to Allocations
           </Button>
+          <Button
+            onClick={handleImportDialog}
+            variant="outlined"
+            startIcon={<Iconify icon="eva:alert-circle-fill" />}
+            sx={{ mb: 2 }}
+            style={{ margin: '5px' }}
+          >
+            Add feedback
+          </Button>
+          <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseImportDialog} />
           <Allocation row={selectedRow} />
         </Card>
       ) : (
