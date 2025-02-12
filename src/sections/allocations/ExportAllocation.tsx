@@ -40,10 +40,9 @@ const ExportAllocation: React.FC = () => {
   return (
     <>
       <Button onClick={handleExport} disabled={isLoading}
-        variant="contained"
+        variant="outlined"
         color="primary"
         startIcon={<Iconify icon="mingcute:add-line" />}
-        sx={{ textTransform: 'none', borderRadius: 2 }}
         style={{maxWidth:'max-content'} }
       >
         {isLoading ? <CircularProgress size={24} /> : 'Export Allocation'}

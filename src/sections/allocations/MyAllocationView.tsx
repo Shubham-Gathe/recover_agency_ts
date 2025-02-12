@@ -225,7 +225,7 @@ const MyAllocationView = () => {
           <Button
             onClick={handleImportDialog}
             variant="outlined"
-            startIcon={<Iconify icon="eva:alert-circle-fill" />}
+            startIcon={<Iconify icon="eva:message-square-outline" />}
             sx={{ mb: 2 }}
             style={{ margin: '5px' }}
           >
