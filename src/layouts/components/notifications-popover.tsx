@@ -21,6 +21,7 @@ import { fToNow } from 'src/utils/format-time';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
+import { ListItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -64,7 +65,7 @@ export function NotificationsPopover({ data = [], sx, ...other }: NotificationsP
 
   return (
     <>
-      <IconButton
+       <IconButton
         color={openPopover ? 'primary' : 'default'}
         onClick={handleOpenPopover}
         sx={sx}
@@ -86,66 +87,62 @@ export function NotificationsPopover({ data = [], sx, ...other }: NotificationsP
             sx: {
               width: 360,
               overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
             },
           },
         }}
       >
-        <Box display="flex" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1.5 }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">Notifications</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              You have {totalUnRead} unread messages
-            </Typography>
-          </Box>
+        <List
+          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+          subheader={
+            <ListItem
+              sx={{ py: 2, px: 2.5 }}
+              secondaryAction={
+                totalUnRead > 0 && (
+                  <Tooltip title="Mark all as read">
+                    <IconButton color="primary" onClick={handleMarkAllAsRead}>
+                      <Iconify icon="solar:check-read-outline" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              }
+            >
+              <ListItemText
+                primary="Notifications"
+                secondary={`You have ${totalUnRead} unread messages`}
+                primaryTypographyProps={{ variant: 'subtitle1' }}
+                secondaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+              />
+            </ListItem>
+          }
+        >
+          <Divider sx={{ borderStyle: 'dashed' }} />
 
-          {totalUnRead > 0 && (
-            <Tooltip title=" Mark all as read">
-              <IconButton color="primary" onClick={handleMarkAllAsRead}>
-                <Iconify icon="solar:check-read-outline" />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Scrollbar fillContent sx={{ minHeight: 240, maxHeight: { xs: 360, sm: 'none' } }}>
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                New
-              </ListSubheader>
-            }
-          >
+          <Scrollbar fillContent sx={{ maxHeight: { xs: 360, sm: 'none' } }}>
+            <ListSubheader sx={{ typography: 'overline', py: 1, px: 2.5 }}>New</ListSubheader>
             {notifications.slice(0, 2).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+              <ListItem key={notification.id} button>
+                <NotificationItem notification={notification} />
+              </ListItem>
             ))}
-          </List>
 
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                Before that
-              </ListSubheader>
-            }
-          >
+            <ListSubheader sx={{ typography: 'overline', py: 1, px: 2.5 }}>
+              Before that
+            </ListSubheader>
             {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+              <ListItem key={notification.id} button>
+                <NotificationItem notification={notification} />
+              </ListItem>
             ))}
-          </List>
-        </Scrollbar>
+          </Scrollbar>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+          <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple color="inherit">
-            View all
-          </Button>
-        </Box>
+          <ListItem button>
+            <Button fullWidth disableRipple color="inherit">
+              View all
+            </Button>
+          </ListItem>
+        </List>
       </Popover>
     </>
   );

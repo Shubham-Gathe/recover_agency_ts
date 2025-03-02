@@ -16,6 +16,7 @@ import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
 import SearchAllocations from "./SearchAllocations";
 import Allocation from "./Allocation";
+import { NONAME } from "dns";
 interface RowData {
   id: number;
   segment: string;
@@ -283,7 +284,7 @@ const AllocationView = () => {
       />
 
       <Box sx={{ p: 3 }}>
-        <Box display="flex" alignItems="center" mb={3}>
+        <Box display="flex" alignItems="center" mb={3} sx={{gap:2}}>
           <Typography variant="h4" flexGrow={1}>
             Allocations
           </Typography>
@@ -319,7 +320,7 @@ const AllocationView = () => {
                 onClick={handleBackToTable}
                 variant="outlined"
                 startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
-                sx={{ mb: 2 }}
+                sx={{ mb: 2, borderRadius: 2  }}
             >
                 Back to Allocations
             </Button>
@@ -375,20 +376,22 @@ const AllocationView = () => {
                         setRowSelectionModel(newRowSelectionModel);
                       }}
                       sx={{
+                        border: 'none',
                         height: '70vh',
                         minWidth: "100%",
                         '& .MuiDataGrid-columnHeaders': {
-                          backgroundColor: '#f5f5f5',
+                          // backgroundColor: '#f5f5f5',
                           fontWeight: 'bold',
                         },
                         '& .MuiDataGrid-cell': {
-                          borderBottom: '1px solid #e0e0e0',
+                          // borderBottom: '1px solid #e0e0e0',
                         },
                         "& .stickyColumn": {
                           position: "sticky",
                           right: 0,
-                          backgroundColor: "#fff",
+                          // backgroundColor: "#fff",
                           zIndex: 999,
+                          borderBottom: "none",
                         },
                       }}
                       slotProps={{

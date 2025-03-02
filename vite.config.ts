@@ -17,7 +17,7 @@ export default defineConfig({
         dev: { logLevel: ['error'] },
       },
       overlay: {
-        position: 'bl',
+        position: 'tr',
         initialIsOpen: false,
       },
     }),

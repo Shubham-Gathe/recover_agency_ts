@@ -14,7 +14,7 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { Label } from "@mui/icons-material";
+import { Bold } from "lucide-react";
 
 interface FeedbackProps {
   isOpen: boolean;
@@ -23,20 +23,23 @@ interface FeedbackProps {
 
 type FieldValues = { [field: string]: string };
 
-// Configuration mapping for codes and their required fields.
-// For codes that don’t require a subcode, useSubCode is false and the 'fields' array is used.
-// For codes that require a subcode, useSubCode is true and subCodeOptions provides a mapping
-// of subcode values to the list of required fields.
+const resolutionOptions = [
+  { label: "Stable", value: "stab" },
+  { label: "Normalize", value: "norm" },
+  { label: "Rollback", value: "rb" },
+  { label: "Flow", value: "flow" },
+];
+
 const codeConfigurations: {
-  [code: string]: {
-    useSubCode: boolean;
-    fields?: string[];
-    subCodeOptions?: { [subCode: string]: string[] };
-  };
-} = {
+    [code: string]: {
+      useSubCode: boolean;
+      fields?: string[];
+      subCodeOptions?: { [subCode: string]: string[]; } 
+    }
+  } = {
   PAID: {
     useSubCode: false,
-    fields: ["Amount", "Remarks"],
+    fields: ["Emi Amount", "BCC Amount", "Total Amount", "Remarks"],
   },
   PPD: {
     useSubCode: false,
@@ -137,6 +140,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose }) => {
       alert("Please fill all required fields...\n" + "Invalid: " + requiredFields);
       return;
     }
+    console.log("Submitted Data:", { code, subCode, fieldValues });
     onClose();
   };
 
@@ -214,12 +218,28 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose }) => {
               </Grid>
             </>
           ))}
+
+          {code === "PAID" && (
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Resolution</InputLabel>
+                <Select
+                  value={fieldValues["resolution"] || ""}
+                  onChange={(e) => handleFieldChange("resolution", e.target.value)}
+                >
+                  {resolutionOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label + ' (' + option.value + ')'}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>
-          Cancel
-        </Button>
+        <Button onClick={onClose}>Cancel</Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
           Submit
         </Button>

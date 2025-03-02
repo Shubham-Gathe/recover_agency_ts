@@ -88,7 +88,8 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
 
   return (
     <>
-      <Button aria-describedby={search_id} variant="contained" onClick={handleClick}>
+      <Button aria-describedby={search_id} variant="contained" onClick={handleClick}
+      sx={{borderRadius: 2 }}>
         Find
       </Button>
 

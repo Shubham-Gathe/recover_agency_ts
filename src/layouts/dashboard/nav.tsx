@@ -19,6 +19,11 @@ import { Scrollbar } from 'src/components/scrollbar';
 import { WorkspacesPopover } from '../components/workspaces-popover';
 
 import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
+import { _notifications } from 'src/_mock';
+import { Iconify } from 'src/components/iconify';
+import { AccountPopover } from '../components/account-popover';
+import { NotificationsPopover } from '../components/notifications-popover';
+import { Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -115,14 +120,32 @@ export function NavMobile({
 
 export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
   const pathname = usePathname();
+    const accountData = [
+                      {
+                        label: 'Home',
+                        href: '/',
+                        icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" />,
+                      },
+                      {
+                        label: 'Profile',
+                        href: '#',
+                        icon: <Iconify width={22} icon="solar:shield-keyhole-bold-duotone" />,
+                      },
+                      {
+                        label: 'Settings',
+                        href: '#',
+                        icon: <Iconify width={22} icon="solar:settings-bold-duotone" />,
+                      },
+                    ];
+
 
   return (
     <>
       <Logo />
 
       {slots?.topArea}
-      <Scrollbar fillContent> 
-        <Box component="nav" display="flex" flex="1 1 auto" flexDirection="column" sx={sx}>
+      <Scrollbar fillContent>
+        <Box component="nav" display="flex" flex="1 1 auto" flexDirection="column" sx={{ ...sx, justifyContent: 'space-between' }}>
           <Box component="ul" gap={0.5} display="flex" flexDirection="column">
             {data.map((item) => {
               const isActived = item.path === pathname;
@@ -167,10 +190,48 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
               );
             })}
           </Box>
+
+            {/* Bottom Area Slot - if available, put Notifications and Account here */}
+            {slots?.bottomArea ? (
+                <Box component="ul" gap={0.5} display="flex" flexDirection="column" sx={{ mt: 2 }}>
+                    <ListItem key="notifications" disableGutters disablePadding>
+                        <Box sx={{ pl: 2, py: 1, gap: 2, pr: 1.5, borderRadius: 0.75, minHeight: 'var(--layout-nav-item-height)', display: 'flex', alignItems: 'center', color: 'var(--layout-nav-item-color)' }}>
+                            <NotificationsPopover data={_notifications} />
+                            <Typography sx={{ ml: 1 }}>Notifications</Typography>
+                        </Box>
+                    </ListItem>
+
+                    <ListItem key="account" disableGutters disablePadding>
+                        <Box sx={{ pl: 2, py: 1, gap: 2, pr: 1.5, borderRadius: 0.75, minHeight: 'var(--layout-nav-item-height)', display: 'flex', alignItems: 'center', color: 'var(--layout-nav-item-color)' }}>
+                            <AccountPopover data={accountData} />
+                            <Typography sx={{ ml: 1 }}>Account</Typography>
+                        </Box>
+                    </ListItem>
+                </Box>
+            ) : (
+                // If no bottomArea slot, place them at the very bottom of the nav
+                <Box component="ul" gap={0.5} display="flex" flexDirection="column" sx={{ mt: 2 }}>
+                    <ListItem key="notifications" disableGutters disablePadding>
+                        <Box sx={{ pl: 2, py: 1, gap: 2, pr: 1.5, borderRadius: 0.75, minHeight: 'var(--layout-nav-item-height)', display: 'flex', alignItems: 'center', color: 'var(--layout-nav-item-color)' }}>
+                            <NotificationsPopover data={_notifications} />
+                            <Typography sx={{ ml: 1 }}>Notifications</Typography>
+                        </Box>
+                    </ListItem>
+
+                    <ListItem key="account" disableGutters disablePadding>
+                        <Box sx={{ pl: 2, py: 1, gap: 2, pr: 1.5, borderRadius: 0.75, minHeight: 'var(--layout-nav-item-height)', display: 'flex', alignItems: 'center', color: 'var(--layout-nav-item-color)' }}>
+                            <AccountPopover data={accountData} />
+                            <Typography sx={{ ml: 1 }}>Account</Typography>
+                        </Box>
+                    </ListItem>
+                </Box>
+            )}
+
+
         </Box>
       </Scrollbar>
 
-      {slots?.bottomArea}
+      {slots?.bottomArea && null} {/* Conditionally render bottomArea slot if not used above for Notifications/Account, otherwise, render nothing to avoid duplication */}
     </>
   );
 }
