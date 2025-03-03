@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
+import { RootState, AppDispatch } from 'src/store/store';
 import {
   Box,
   Card,
@@ -12,7 +12,6 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
-import { _users } from 'src/_mock';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';

@@ -3,6 +3,8 @@ import * as WebDataRocksReact from "@webdatarocks/react-webdatarocks";
 import WebDataRocks from 'webdatarocks';
 import api from 'src/utils/api';
 import { Box, Button, Card, Typography } from '@mui/material';
+import LoadingScreen from 'src/components/ui/LoadingScreen';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 interface PivotResult {
   rowKey: string;
@@ -76,6 +78,7 @@ const PivotTable: React.FC = () => {
   const [tableData, setTableData] = useState<DataRecord[]>([]);
   const pivotContainerRef = useRef(null);
   const [refresh, setRefresh] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
 
   const renderPivotTable = () => {
     const container = pivotContainerRef.current;
@@ -105,6 +108,7 @@ const PivotTable: React.FC = () => {
 
   const getAllocationData = async () => {
     try {
+      setLoading(true);
       const response = await api.get('/allocation_drafts', {
         params: { data_type: 'pivot'},
         headers: {
@@ -115,6 +119,7 @@ const PivotTable: React.FC = () => {
       const { data, metadata } = response.data;
       setRefresh(false);
       setTableData(data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -133,22 +138,26 @@ const PivotTable: React.FC = () => {
   }, [tableData]);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box display="flex" alignItems="center" mb={3} sx={{ gap: 2 }}>
-        <Typography variant="h4" flexGrow={1}>
-          Pivot Table
-        </Typography>
-        <Button
-          variant="outlined"
-          onClick={() => setRefresh(true)}
-          href="#">
-            Refresh Data
-        </Button>
+    <>
+      <Box sx={{ p: 3 }}>
+        <Box display="flex" alignItems="center" mb={3} sx={{ gap: 2 }}>
+          <Typography variant="h4" flexGrow={1}>
+            Pivot Table
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={() => setRefresh(true)}
+            startIcon={<AutorenewIcon />}
+          >
+              Refresh Data
+          </Button>
+        </Box>
+        <Card sx={{ p: 2, overflow: 'auto', minHeight: '80vh' }}>
+          <LoadingScreen open={loading} />
+          <div id="pivot-table-container" ref={pivotContainerRef}></div>
+        </Card>
       </Box>
-      <Card sx={{ p: 2, overflow: 'auto', minHeight: '80vh' }}>
-        <div id="pivot-table-container" ref={pivotContainerRef}></div>
-      </Card>
-    </Box>
+    </>
   );
 };
 

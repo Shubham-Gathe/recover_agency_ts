@@ -16,7 +16,9 @@ import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
 import SearchAllocations from "./SearchAllocations";
 import Allocation from "./Allocation";
-
+import LoadingScreen from "src/components/ui/LoadingScreen";
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 interface RowData {
   id: number;
   segment: string;
@@ -193,6 +195,7 @@ const AllocationView = () => {
 
   const mySaveOnServerFunction = async (updatedRow: any, originalRow: any) => {
     console.log('updatedRow', updatedRow);
+    setLoading(true);
     try {
       const response = await api.put(`/allocation_drafts/${updatedRow.id}`, { 'data': updatedRow }, {
         headers: {
@@ -204,6 +207,8 @@ const AllocationView = () => {
     } catch (error) {
       console.error('Error updating row:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -227,6 +232,7 @@ const AllocationView = () => {
 
   const fetchPage = async () => {
     try {
+      setLoading(true);
       const params: any = {
         page: paginationModel.page + 1,
         per_page: paginationModel.pageSize,
@@ -252,6 +258,7 @@ const AllocationView = () => {
       const { data, metadata } = response.data;
       setTotalRows(metadata.total);
       setRows(data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -297,8 +304,8 @@ const AllocationView = () => {
             onClick={handleImportDialog}
             variant="contained"
             color="primary"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            sx={{ textTransform: 'none', borderRadius: 2 }}
+            startIcon={<SaveAltIcon />}
+            sx={{ textTransform: 'none' }}
           >
             Import Allocation
           </Button>
@@ -307,8 +314,8 @@ const AllocationView = () => {
             onClick={handleOpenDialog}
             variant="contained"
             color="primary"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            sx={{ textTransform: 'none', borderRadius: 2 }}
+            startIcon={<AssignmentIndIcon />}
+            sx={{ textTransform: 'none' }}
           >
             Assign
           </Button>
@@ -321,7 +328,7 @@ const AllocationView = () => {
                 onClick={handleBackToTable}
                 variant="outlined"
                 startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
-                sx={{ mb: 2, borderRadius: 2  }}
+                sx={{ mb: 2}}
             >
                 Back to Allocations
             </Button>
@@ -352,8 +359,8 @@ const AllocationView = () => {
 
             <Scrollbar>
               <TableContainer>
-                {loading ? (
-                  <Typography align="center">Loading...</Typography>
+                { loading ? (
+                  <LoadingScreen open={loading} />
                 ) : (
                   <Box sx={{ width: "100%", overflowX: "auto", position: "relative" }}>
                     <DataGrid
