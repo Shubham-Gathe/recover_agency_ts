@@ -45,6 +45,11 @@ export const useNavData = (): NavItem[] => {
       path: '/dashboard/allocations',
       icon: icon('ic-user'),
     },
+    {
+      title: 'Pivot Reports',
+      path: 'dashboard/pivot-reports',
+      icon: icon('ic-user'),
+    },
   ];
 
   // Regular user-specific links

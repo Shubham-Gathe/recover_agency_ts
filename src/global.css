@@ -12,6 +12,8 @@
 /** **************************************
 * Plugins
 *************************************** */
+@import "@webdatarocks/webdatarocks/webdatarocks.css";
+
 /* scrollbar */
 @import './components/scrollbar/styles.css';
 

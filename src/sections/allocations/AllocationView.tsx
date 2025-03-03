@@ -16,7 +16,7 @@ import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
 import SearchAllocations from "./SearchAllocations";
 import Allocation from "./Allocation";
-import { NONAME } from "dns";
+
 interface RowData {
   id: number;
   segment: string;
@@ -68,6 +68,7 @@ interface RowData {
   caller_id: number;
   executive_id: number | null;
 }
+
 const AllocationView = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
