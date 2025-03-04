@@ -49,7 +49,7 @@ export const useNavData = (): NavItem[] => {
       icon: <TableChartIcon/>,
     },
     {
-      title: 'Pivot Reports',
+      title: 'Pivot Chart',
       path: 'dashboard/pivot-reports',
       icon: <PivotTableChartIcon/>,
     },
