@@ -2,7 +2,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'src/store/store';
 import { SvgColor } from 'src/components/svg-color';
 import { ReactNode } from 'react';
-
+import GroupIcon from '@mui/icons-material/Group';
+import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 // Define the structure for navigation items
 interface NavItem {
   title: string;
@@ -24,13 +27,13 @@ export const useNavData = (): NavItem[] => {
     {
       title: 'Dashboard',
       path: '/',
-      icon: icon('ic-analytics'),
+      icon: <DashboardIcon/>,
     },
-    {
-      title: 'Profile',
-      path: '/dashboard/profile',
-      icon: icon('ic-user'),
-    },
+    // {
+    //   title: 'Profile',
+    //   path: '/dashboard/profile',
+    //   icon: icon('ic-user'),
+    // },
   ];
 
   // Admin-specific links
@@ -38,12 +41,17 @@ export const useNavData = (): NavItem[] => {
     {
       title: 'All Users',
       path: '/dashboard/user',
-      icon: icon('ic-user'),
+      icon: <GroupIcon/>,
     },
     {
       title: 'Allocations',
       path: '/dashboard/allocations',
-      icon: icon('ic-user'),
+      icon: <TableChartIcon/>,
+    },
+    {
+      title: 'Pivot Chart',
+      path: 'dashboard/pivot-reports',
+      icon: <PivotTableChartIcon/>,
     },
   ];
 
@@ -52,7 +60,7 @@ export const useNavData = (): NavItem[] => {
     {
       title: 'My Allocations',
       path: '/dashboard/my-allocations',
-      icon: icon('ic-folder'),
+      icon: <TableChartIcon/>,
     },
   ];
 

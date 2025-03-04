@@ -20,7 +20,7 @@
     "dev:host": "vite --host"
   },
   "engines": {
-    "node": "20.x"
+    "node": "^22.x"
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
@@ -51,7 +51,8 @@
     "react-router-dom": "^6.26.1",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "simplebar-react": "^3.2.6"
+    "simplebar-react": "^3.2.6",
+    "webdatarocks": "^1.4.9"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",

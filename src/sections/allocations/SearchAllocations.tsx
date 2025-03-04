@@ -17,7 +17,8 @@ import {
   Box,
   Card,
 } from '@mui/material';
-
+import FindInPageIcon from '@mui/icons-material/FindInPage';
+import SearchIcon from '@mui/icons-material/Search';
 interface SearchAllocationsProps {
   onSearch: (query: string, fields: string[]) => void;
   onReset: () => void;
@@ -88,7 +89,13 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
 
   return (
     <>
-      <Button aria-describedby={search_id} variant="contained" onClick={handleClick}>
+      <Button
+        aria-describedby={search_id}
+        variant="contained"
+        onClick={handleClick}
+        startIcon={<SearchIcon />}
+        sx={{ }}
+      >
         Find
       </Button>
 

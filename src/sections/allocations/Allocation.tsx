@@ -72,7 +72,7 @@ const Allocation: React.FC<AllocationProps> = ({ row }) => {
     <Grid container spacing={3} style={{ padding: '20px' }}>
       {sectionStyles.map(({ title, color, icon, fields }, index) => (
         <Grid item xs={12} md={6} key={index}>
-          <Card style={{ borderRadius: '12px', boxShadow: 'none', backgroundColor: '#f9f9f9', padding: '15px' }}>
+          <Card style={{ backgroundColor: '#f9f9f9', padding: '15px' }}>
             <CardHeader
               avatar={<Avatar style={{ backgroundColor: color }}>{icon}</Avatar>}
               title={title}

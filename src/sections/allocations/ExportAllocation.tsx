@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, CircularProgress, Snackbar, Alert } from '@mui/material';
 import api from 'src/utils/api';
 import { Iconify } from 'src/components/iconify';
+import IosShareIcon from '@mui/icons-material/IosShare';
 
 const ExportAllocation: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,11 +41,10 @@ const ExportAllocation: React.FC = () => {
   return (
     <>
       <Button onClick={handleExport} disabled={isLoading}
-        variant="contained"
+        variant="outlined"
         color="primary"
-        startIcon={<Iconify icon="mingcute:add-line" />}
-        sx={{ textTransform: 'none', borderRadius: 2 }}
-        style={{maxWidth:'max-content'} }
+        startIcon={<IosShareIcon />}
+        sx={{maxWidth:'max-content'} }
       >
         {isLoading ? <CircularProgress size={24} /> : 'Export Allocation'}
       </Button>
