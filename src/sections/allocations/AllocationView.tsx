@@ -6,6 +6,7 @@ import {
   Button,
   Typography,
   TableContainer,
+  Paper,
 } from "@mui/material";
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
@@ -19,6 +20,7 @@ import Allocation from "./Allocation";
 import LoadingScreen from "src/components/ui/LoadingScreen";
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import FeedbackDialog from "./FeedbackDialog";
 interface RowData {
   id: number;
   segment: string;
@@ -75,7 +77,7 @@ const AllocationView = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [RowSelectionModel, setRowSelectionModel] = useState<RowData | null>(null);
   const [openImportDialog, setOpenImportDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,8 +87,30 @@ const AllocationView = () => {
     pageSize: 10,
   });
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
+  const [openFeedbackDialog, setOpenFeedbackDialog] = useState(false);
 
   const defaultColumns: GridColDef[] = [
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 120,
+      sortable: false,
+      filterable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => handleShowDetails(params.row)}
+        >
+          Show
+        </Button>
+      ),
+      // Keep column sticky on the right
+      cellClassName: "stickyColumn",
+    },
     // { field: "serialNumber", headerName: "Sr.No", width: 90 },
     // { field: "serialNumber", headerName: "Sr.No", width: 90 },
     { field: "id", headerName: "ID", width: 90 },
@@ -138,27 +162,6 @@ const AllocationView = () => {
     { field: "updated_at", headerName: "Updated At", width: 200, editable: true },
     { field: "caller_id", headerName: "Caller ID", width: 150, editable: true },
     { field: "executive_id", headerName: "Executive ID", width: 150, editable: true },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 120,
-      sortable: false,
-      filterable: false,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          onClick={() => handleShowDetails(params.row)}
-        >
-          Show
-        </Button>
-      ),
-      // Keep column sticky on the right
-      cellClassName: "stickyColumn",
-    },
   ];
 
   const storedVisibility = JSON.parse(localStorage.getItem('columnVisibility') || '{}');
@@ -224,11 +227,14 @@ const AllocationView = () => {
   const handleBackToTable = () => {
     setSelectedRow(null); // Reset selected row to show the table again
   };
-  const handleOpenDialog = () => setDialogOpen(true);
-  const handleCloseDialog = () => setDialogOpen(false);
+  const handleAssignDialog = () => setAssignDialogOpen(true);
+  const handleCloseAssignDialog = () => setAssignDialogOpen(false);
 
   const handleImportDialog = () => setOpenImportDialog(true);
   const handleCloseImportDialog = () => setOpenImportDialog(false);
+
+  const handleFeedbackDialog = () => setOpenFeedbackDialog(true);
+  const handleCloseFeedbackDialog = () => setOpenFeedbackDialog(false);
 
   const fetchPage = async () => {
     try {
@@ -292,7 +298,7 @@ const AllocationView = () => {
       />
 
       <Box sx={{ p: 3 }}>
-        <Box display="flex" alignItems="center" mb={3} sx={{gap:2}}>
+        <Box display="flex" alignItems="center" mb={3} sx={{ gap: 2 }}>
           <Typography variant="h4" flexGrow={1}>
             Allocations
           </Typography>
@@ -311,7 +317,7 @@ const AllocationView = () => {
           </Button>
 
           <Button
-            onClick={handleOpenDialog}
+            onClick={handleAssignDialog}
             variant="contained"
             color="primary"
             startIcon={<AssignmentIndIcon />}
@@ -324,18 +330,29 @@ const AllocationView = () => {
         {selectedRow ? (
           // Show Allocation component when a row is selected
           <Card sx={{ p: 2 }}>
-            <Button 
+            <Paper sx={{ display: 'flex', gap: 1 }}>
+              <Button
                 onClick={handleBackToTable}
                 variant="outlined"
                 startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
-                sx={{ mb: 2}}
-            >
+                sx={{ mb: 2 }}
+              >
                 Back to Allocations
-            </Button>
-            <Allocation row={selectedRow}/>
+              </Button>
+              <Button
+                onClick={handleFeedbackDialog}
+                variant="outlined"
+                startIcon={<Iconify icon="eva:message-square-outline" />}
+                sx={{ mb: 2 }}
+              >
+                Add feedback
+              </Button>
+            </Paper>
+            <Allocation row={selectedRow} />
+            <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} />
           </Card>
-      ) : (
-      // Show the DataGrid when no row is selected
+        ) : (
+          // Show the DataGrid when no row is selected
           <Card sx={{ p: 2 }}>
             {/* TODO - NOTE - Following code
               - Commenting due to no use
@@ -359,7 +376,7 @@ const AllocationView = () => {
 
             <Scrollbar>
               <TableContainer>
-                { loading ? (
+                {loading ? (
                   <LoadingScreen open={loading} />
                 ) : (
                   <Box sx={{ width: "100%", overflowX: "auto", position: "relative" }}>
@@ -419,7 +436,7 @@ const AllocationView = () => {
               </TableContainer>
             </Scrollbar>
           </Card>
-      )}
+        )}
       </Box>
       {/* Keep dialog components at the bottom */}
       <ImportAllocation
@@ -429,8 +446,8 @@ const AllocationView = () => {
       />
 
       <AssignDialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
+        open={assignDialogOpen}
+        onClose={handleCloseAssignDialog}
         // @ts-expect-error
         selectedRows={RowSelectionModel}
         refreshData={fetchPage}

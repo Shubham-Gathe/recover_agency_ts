@@ -164,8 +164,8 @@ const MyAllocationView = () => {
     setSelectedRow(null); // Reset selected row to show the table again
   };
 
-  const handleImportDialog = () => setOpenFeedbackDialog(true);
-  const handleCloseImportDialog = () => setOpenFeedbackDialog(false);
+  const handleFeedbackDialog = () => setOpenFeedbackDialog(true);
+  const handleCloseFeedbackDialog = () => setOpenFeedbackDialog(false);
 
   const fetchPage = async () => {
     try {
@@ -223,7 +223,7 @@ const MyAllocationView = () => {
             Back to Allocations
           </Button>
           <Button
-            onClick={handleImportDialog}
+            onClick={handleFeedbackDialog}
             variant="outlined"
             startIcon={<Iconify icon="eva:message-square-outline" />}
             sx={{ mb: 2 }}
@@ -231,7 +231,7 @@ const MyAllocationView = () => {
           >
             Add feedback
           </Button>
-          <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseImportDialog} />
+          <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} />
           <Allocation row={selectedRow} />
         </Card>
       ) : (
