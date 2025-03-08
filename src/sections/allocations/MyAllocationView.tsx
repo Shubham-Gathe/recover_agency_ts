@@ -7,6 +7,7 @@ import {
   Typography,
   TableContainer,
   Button,
+  Paper,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import FloatingPanel from "./FloatingPanel";
@@ -213,24 +214,24 @@ const MyAllocationView = () => {
       {selectedRow ? (
         // Show Allocation component when a row is selected
         <Card sx={{ p: 2 }}>
-          <Button
-            onClick={handleBackToTable}
-            variant="outlined"
-            startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
-            sx={{ mb: 2 }}
-            style={{ margin: '5px' }}
-          >
-            Back to Allocations
-          </Button>
-          <Button
-            onClick={handleFeedbackDialog}
-            variant="outlined"
-            startIcon={<Iconify icon="eva:message-square-outline" />}
-            sx={{ mb: 2 }}
-            style={{ margin: '5px' }}
-          >
-            Add feedback
-          </Button>
+          <Paper sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                onClick={handleBackToTable}
+                variant="outlined"
+                startIcon={<Iconify icon="eva:arrow-ios-back-fill" />}
+                sx={{ mb: 2 }}
+              >
+                Back to Allocations
+              </Button>
+              <Button
+                onClick={handleFeedbackDialog}
+                variant="outlined"
+                startIcon={<Iconify icon="eva:message-square-outline" />}
+                sx={{ mb: 2 }}
+              >
+                Add feedback
+              </Button>
+            </Paper>
           <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} selectedData={selectedRow} />
           <Allocation row={selectedRow} />
         </Card>
