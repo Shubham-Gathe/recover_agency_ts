@@ -233,7 +233,9 @@ const AllocationView = () => {
   const handleImportDialog = () => setOpenImportDialog(true);
   const handleCloseImportDialog = () => setOpenImportDialog(false);
 
-  const handleFeedbackDialog = () => setOpenFeedbackDialog(true);
+  const handleFeedbackDialog = () => {
+    setOpenFeedbackDialog(true)
+  };
   const handleCloseFeedbackDialog = () => setOpenFeedbackDialog(false);
 
   const fetchPage = async () => {
@@ -349,7 +351,7 @@ const AllocationView = () => {
               </Button>
             </Paper>
             <Allocation row={selectedRow} />
-            <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} />
+            { selectedRow && <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} selectedData={selectedRow} />}
           </Card>
         ) : (
           // Show the DataGrid when no row is selected

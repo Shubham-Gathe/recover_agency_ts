@@ -231,7 +231,7 @@ const MyAllocationView = () => {
           >
             Add feedback
           </Button>
-          <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} />
+          <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} selectedData={selectedRow} />
           <Allocation row={selectedRow} />
         </Card>
       ) : (
