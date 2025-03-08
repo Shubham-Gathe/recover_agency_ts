@@ -14,8 +14,10 @@ import {
   TextareaAutosize,
   Typography,
   CircularProgress,
+  Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { Bold } from "lucide-react";
 import { useSelector } from 'react-redux'; // Import useSelector to access Redux state
 import api from "src/utils/api";
 interface RowData {
@@ -114,6 +116,9 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   const user = useSelector((state: any) => state.auth.user);
   const [apiCodeConfigurations, setApiCodeConfigurations] = useState<ApiCodeConfigurations>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" }>({ message: "", severity: 'success' });
 
   useEffect(() => {
     const fetchFeedbackCodes = async () => {
@@ -127,7 +132,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
             },
           });
           const data = response.data;
-
+          console.log('fields', data);
           // Transform the array response into an object keyed by 'code' with correct types
           const configObject: ApiCodeConfigurations = data.reduce((acc: ApiCodeConfigurations, feedbackCode: FeedbackCodeFromApi) => {
             acc[feedbackCode.code] = {
@@ -139,7 +144,6 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
             };
             return acc;
           }, {} as ApiCodeConfigurations);
-
           setApiCodeConfigurations(configObject);
 
         } catch (error: any) {
@@ -190,7 +194,8 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   }
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setSubmitLoading(true);
     console.log('requiredFields >>>> ', requiredFields);
     // Fields to validate, initially same as requiredFields
     let fieldsToValidate = [...requiredFields];
@@ -213,8 +218,48 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
       alert("Please fill all required fields...\n" + "Invalid Fields: " + fieldsToValidate.join(", "));
       return;
     }
-    console.log("Submitted Data:", { code, subCode, fieldValues });
-    onClose(); // Close the dialog after successful submission
+
+    if (isValid) {
+      try {
+        console.log("Submitted Data:", { code, subCode, fieldValues });
+        const response = await api.post(
+          `/allocation_drafts/update_feedback`,
+          { code, subCode, fieldValues },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+          }
+        )
+        setSnackbar({
+          message: response.data.message,
+          severity: response.status == 200 ? "success" : "error"
+        });
+        setOpenSnackbar(true);
+
+        setTimeout(() => {
+          if (response.data) {
+            setOpenSnackbar(false);
+            onClose();
+            setSubmitLoading(false);
+          }
+        }, 3500);
+      } catch (error) {
+        setSnackbar({
+          message: error.response?.data?.message || "Something went wrong!",
+          severity: "error"
+        });
+        setOpenSnackbar(true);
+        setSubmitLoading(false);
+        console.error(error);
+
+        setTimeout(() => {
+          setOpenSnackbar(false);
+        }, 3000);
+      }
+    }
+
   };
 
   // Function to filter codes based on user role
@@ -230,147 +275,161 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   };
   const filteredCodes = getFilteredCodes(); // Get codes filtered by user role
   const orderedCodes = ["PAID", "PPD", ...filteredCodes.filter(codeKey => codeKey !== "PAID" && codeKey !== "PPD").sort()]; // Order codes: PAID, PPD first, then others alphabetically
-  
-    useEffect(() => {
-    }, [filteredCodes, orderedCodes, apiCodeConfigurations]);
-  
+
+  useEffect(() => {
+  }, [filteredCodes, orderedCodes, apiCodeConfigurations]);
+
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Submit Feedback</DialogTitle>
-      <DialogContent dividers>
-        {loading ? (
-          <p>Loading feedback codes...</p>
-        ) : (
-          <Grid container spacing={2}>
-            {/* Code Dropdown */}
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="code-select-label">Select Code</InputLabel>
-                <Select
-                  labelId="code-select-label"
-                  value={code}
-                  label="Select Code"
-                  onChange={handleCodeChange}
-                >
-                  {/* Map through ordered and filtered codes for the dropdown */}
-                  { (loading)
-                    ?
-                      (<CircularProgress size={24} />)
-                        : 
-                      (
+      {submitLoading ? (
+        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </DialogContent>
+      ) : (
+        <Paper>
+          <DialogContent dividers>
+            <Grid container spacing={2}>
+              {/* Code Dropdown */}
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="code-select-label">Select Code</InputLabel>
+                  <Select
+                    labelId="code-select-label"
+                    value={code}
+                    label="Select Code"
+                    onChange={handleCodeChange}
+                  >
+                    {/* Map through ordered and filtered codes for the dropdown */}
+                    {
+                      loading ? (
+                        <Paper sx={{ justifyContent: 'center', display: 'flex' }}>
+                          <CircularProgress size={24} />
+                        </Paper>
+                      ) : (
                         orderedCodes.map((codeKey) => {
-                          // console.log(`apiCodeConfigurations > ${apiCodeConfigurations}`);
-                          console.log('codeKey > ', codeKey);
                           const codeConfig = apiCodeConfigurations[codeKey];
-                          console.log('codeConfig > ', codeConfig);
                           let itemStyle = {};
                           // Apply different colors for admin to categorize codes visually
                           if (user && user.role.toLowerCase() === 'admin') {
-                            itemStyle = codeConfig?.category === 'CALLING' ? { color: 'blue' } : (codeConfig.category === 'VISIT' ? { color: 'green' } : { color: 'black' }); // Color CALLING blue, VISIT green, BOTH black
+                            itemStyle = codeConfig?.category === 'CALLING' ? { color: 'purple' } : (codeConfig.category === 'VISIT' ? { color: 'darkgreen' } : { color: 'black' }); // Color CALLING purple, VISIT green, BOTH black
                           }
                           return (
                             <MenuItem key={codeKey} value={codeKey} sx={itemStyle}>
-                              {codeKey}
+                              {`${codeKey}`}&nbsp;<small>{`(${codeConfig?.description})`}</small>
                             </MenuItem>
                           );
                         })
                       )
-                  }
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* SubCode Dropdown (Conditional rendering based on code config) */}
-            {code && apiCodeConfigurations[code]?.useSubCode && (
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="subcode-select-label">Select Sub Code</InputLabel>
-                  <Select
-                    labelId="subcode-select-label"
-                    value={subCode}
-                    label="Select Sub Code"
-                    onChange={handleSubCodeChange}
-                  >
-                    {/* Render SubCode options based on code configuration */}
-                    {apiCodeConfigurations[code].subCodeOptions &&
-                      Object.keys(apiCodeConfigurations[code].subCodeOptions).map((sub) => (
-                        <MenuItem key={sub} value={sub}>
-                          {sub}
-                        </MenuItem>
-                      ))}
+                    }
                   </Select>
                 </FormControl>
               </Grid>
-            )}
 
-            {/* Dynamic Fields - Render fields based on selected Code/SubCode */}
-            {requiredFields.map((field) => {
-              // Determine if field is for amount or date for input type
-              const isAmountField = ["Amount", "Emi Amount", "BCC Amount", "Total Amount", "Settlement Amount", "Paid Amount"].includes(field);
-              const isDateField = ["Promise to Pay Date", "Callback Date", "Next Payment Date", "Settlement Date", "Settled Date", "PTP Date", "Callback Date/Time", "Next PTP Date", "Settlement Date"].includes(field);
+              {/* SubCode Dropdown (Conditional rendering based on code config) */}
+              {code && apiCodeConfigurations[code]?.useSubCode && (
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="subcode-select-label">Select Sub Code</InputLabel>
+                    <Select
+                      labelId="subcode-select-label"
+                      value={subCode}
+                      label="Select Sub Code"
+                      onChange={handleSubCodeChange}
+                    >
+                      {/* Render SubCode options based on code configuration */}
+                      {apiCodeConfigurations[code].subCodeOptions &&
+                        Object.keys(apiCodeConfigurations[code].subCodeOptions).map((sub) => (
+                          <MenuItem key={sub} value={sub}>
+                            {sub}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
 
-              return (
-                <React.Fragment key={field}>
-                  <Grid item xs={12} >
-                    {/* Use TextareaAutosize for 'Remarks' and similar fields */}
-                    {(field === "Remarks" || field === "Detailed Feedback" || field === "Dispute Details" || field === "Door Lock Details" || field === "Skip Details") ? (
-                      <>
-                        <Typography variant="body1" flexGrow={1}>
-                          {field}
-                        </Typography>
-                        <TextareaAutosize
-                          minRows={4}
-                          placeholder={`Enter ${field}`}
+              {/* Dynamic Fields - Render fields based on selected Code/SubCode */}
+              {requiredFields.map((field) => {
+                // Determine if field is for amount or date for input type
+                const isAmountField = ["Amount", "Emi Amount", "BCC Amount", "Total Amount", "Settlement Amount", "Paid Amount"].includes(field);
+                const isDateField = ["Promise to Pay Date", "Callback Date", "Next Payment Date", "Settlement Date", "Settled Date", "PTP Date", "Callback Date/Time", "Next PTP Date", "Settlement Date"].includes(field);
+
+                return (
+                  <React.Fragment key={field}>
+                    <Grid item xs={12} >
+                      {/* Use TextareaAutosize for 'Remarks' and similar fields */}
+                      {(field === "Remarks" || field === "Detailed Feedback" || field === "Dispute Details" || field === "Door Lock Details" || field === "Skip Details") ? (
+                        <>
+                          <Typography variant="body1" flexGrow={1}>
+                            {field}
+                          </Typography>
+                          <TextareaAutosize
+                            minRows={4}
+                            placeholder={`Enter ${field}`}
+                            value={fieldValues[field] || ""}
+                            onChange={(e) => handleFieldChange(field, e.target.value)}
+                            style={{ width: "100%", padding: "8px", fontSize: "16px", borderRadius: "4px", borderColor: "#ccc" }}
+                          />
+                        </>
+                      ) : (
+                        // Use TextField for other fields, with type determined by field name
+                        <TextField
+                          fullWidth
+                          label={field}
                           value={fieldValues[field] || ""}
                           onChange={(e) => handleFieldChange(field, e.target.value)}
-                          style={{ width: "100%", padding: "8px", fontSize: "16px", borderRadius: "4px", borderColor: "#ccc" }}
+                          type={isAmountField ? "number" : isDateField ? "date" : "text"} // Set input type based on field type
+                          inputProps={isAmountField ? { step: "0.01" } : {}} // Allow decimal input for amount fields
+                          InputLabelProps={isDateField ? { shrink: true } : {}} // Ensure DatePicker label doesn't overlap
                         />
-                      </>
-                    ) : (
-                      // Use TextField for other fields, with type determined by field name
-                      <TextField
-                        fullWidth
-                        label={field}
-                        value={fieldValues[field] || ""}
-                        onChange={(e) => handleFieldChange(field, e.target.value)}
-                        type={isAmountField ? "number" : isDateField ? "date" : "text"} // Set input type based on field type
-                        inputProps={isAmountField ? { step: "0.01" } : {}} // Allow decimal input for amount fields
-                        InputLabelProps={isDateField ? { shrink: true } : {}} // Ensure DatePicker label doesn't overlap
-                      />
-                    )}
-                  </Grid>
-                </React.Fragment>
-              )
-            })}
+                      )}
+                    </Grid>
+                  </React.Fragment>
+                )
+              })}
 
-            {/* Resolution Dropdown - Conditionally rendered for PAID code */}
-            {code === "PAID" && (
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Resolution</InputLabel>
-                  <Select
-                    value={fieldValues["resolution"] || ""}
-                    onChange={(e) => handleFieldChange("resolution", e.target.value)}
-                  >
-                    {/* Render Resolution options */}
-                    {resolutionOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label + ' (' + option.value + ')'}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            )}
-          </Grid>
+              {/* Resolution Dropdown - Conditionally rendered for PAID code */}
+              {code === "PAID" && (
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel>Resolution</InputLabel>
+                    <Select
+                      value={fieldValues["resolution"] || ""}
+                      onChange={(e) => handleFieldChange("resolution", e.target.value)}
+                    >
+                      {/* Render Resolution options */}
+                      {resolutionOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label + ' (' + option.value + ')'}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSubmit} color="primary" variant="contained">
+              Submit
+            </Button>
+          </DialogActions>
+        </Paper>
+      )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        {snackbar.severity && (
+          <Alert onClose={() => setOpenSnackbar(false)} severity={snackbar.severity} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
         )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          Submit
-        </Button>
-      </DialogActions>
+      </Snackbar>
     </Dialog>
   );
 };
