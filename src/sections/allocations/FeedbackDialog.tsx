@@ -17,8 +17,9 @@ import {
   Paper,
   Snackbar,
   Alert,
+  FormHelperText,
 } from "@mui/material";
-import { useSelector } from 'react-redux'; // Import useSelector to access Redux state
+import { useSelector } from 'react-redux';
 import api from "src/utils/api";
 interface RowData {
   id: number;
@@ -78,7 +79,7 @@ interface FeedbackProps {
 }
 
 type FieldValues = { [field: string]: string };
-
+type FieldErrors = { [field: string]: string[] };
 // Options for the Resolution dropdown (used for PAID code)
 const resolutionOptions = [
   { label: "Stable", value: "stab" },
@@ -93,7 +94,6 @@ interface FeedbackCodeFromApi {
   category: 'CALLING' | 'VISIT' | 'BOTH';
   description: string;
   fields: string[];
-  // subCodeOptions are likely missing in your API response, so we won't define them here yet
 }
 
 interface CodeConfiguration {
@@ -113,6 +113,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   const [code, setCode] = useState("");
   const [subCode, setSubCode] = useState("");
   const [fieldValues, setFieldValues] = useState<FieldValues>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const user = useSelector((state: any) => state.auth.user);
   const [apiCodeConfigurations, setApiCodeConfigurations] = useState<ApiCodeConfigurations>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -132,7 +133,6 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
             },
           });
           const data = response.data;
-          console.log('fields', data);
           // Transform the array response into an object keyed by 'code' with correct types
           const configObject: ApiCodeConfigurations = data.reduce((acc: ApiCodeConfigurations, feedbackCode: FeedbackCodeFromApi) => {
             acc[feedbackCode.code] = {
@@ -162,6 +162,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     setCode(selectedCode);
     // Reset subCode and field values when code changes
     setSubCode("");
+    setFieldErrors({});
     setFieldValues({});
   };
 
@@ -170,6 +171,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     const selectedSubCode = event.target.value;
     setSubCode(selectedSubCode);
     // Reset field values when subcode changes
+    setFieldErrors({});
     setFieldValues({});
   };
 
@@ -196,7 +198,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   // Handle form submission
   const handleSubmit = async () => {
     setSubmitLoading(true);
-    console.log('requiredFields >>>> ', requiredFields);
+    setFieldErrors({});
     // Fields to validate, initially same as requiredFields
     let fieldsToValidate = [...requiredFields];
 
@@ -205,23 +207,26 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
       fieldsToValidate.push("resolution");
     }
 
-    console.log('fieldsToValidate >>>> ', fieldsToValidate); // Debugging log
-
     // Validate that all required fields (and resolution for PAID) are filled
     const isValid = fieldsToValidate.every((field) => {
       if (field === "resolution" && code !== "PAID") return true; // Exclude resolution validation for non-PAID codes
       return fieldValues.hasOwnProperty(field) && fieldValues[field] !== "";
     });
 
-    console.log("Submitted Data:", { code, subCode, fieldValues });
     if (!isValid && fieldsToValidate.length > 0) { // Only show alert if there are fields to validate
-      alert("Please fill all required fields...\n" + "Invalid Fields: " + fieldsToValidate.join(", "));
+      const errors: FieldErrors = {};
+      fieldsToValidate.forEach(field => {
+        if (!(fieldValues.hasOwnProperty(field) && fieldValues[field] !== "")) {
+          errors[field] = ["This field is required"]; // Set error message for each invalid field
+        }
+      });
+      setFieldErrors(errors);
+      setSubmitLoading(false);
       return;
     }
 
     if (isValid) {
       try {
-        console.log("Submitted Data:", { code, subCode, fieldValues });
         const response = await api.post(
           `/feedbacks`,
           { allocation_id: selectedData.id, feedback: { code, subCode, ...fieldValues }},
@@ -246,6 +251,9 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
           }
         }, 3500);
       } catch (error) {
+        if (error.response?.data?.errors) {
+          setFieldErrors(error.response.data.errors); 
+        }
         setSnackbar({
           message: error.response?.data?.message || "Something went wrong!",
           severity: "error"
@@ -382,6 +390,8 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                           type={isAmountField ? "number" : isDateField ? "date" : "text"} // Set input type based on field type
                           inputProps={isAmountField ? { step: "0.10" } : {}} // Allow decimal input for amount fields
                           InputLabelProps={isDateField ? { shrink: true } : {}} // Ensure DatePicker label doesn't overlap
+                          error={!!fieldErrors[field]}
+                          helperText={fieldErrors[field]?.[0]} 
                         />
                       )}
                     </Grid>
@@ -392,11 +402,14 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
               {/* Resolution Dropdown - Conditionally rendered for PAID code */}
               {code === "PAID" && (
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl
+                    fullWidth
+                    error={!!fieldErrors['resolution']}
+                  >
                     <InputLabel>Resolution</InputLabel>
                     <Select
                       value={fieldValues["resolution"] || ""}
-                      onChange={(e) => handleFieldChange("resolution", e.target.value)}
+                      onChange={(e) => handleFieldChange("resolution", e.target.value)}                      
                     >
                       {/* Render Resolution options */}
                       {resolutionOptions.map((option) => (
@@ -405,6 +418,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                         </MenuItem>
                       ))}
                     </Select>
+                    <FormHelperText>{fieldErrors["resolution"]?.[0]}</FormHelperText>
                   </FormControl>
                 </Grid>
               )}
