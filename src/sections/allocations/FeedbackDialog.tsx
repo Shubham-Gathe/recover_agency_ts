@@ -223,8 +223,8 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
       try {
         console.log("Submitted Data:", { code, subCode, fieldValues });
         const response = await api.post(
-          `/allocation_drafts/update_feedback`,
-          { code, subCode, fieldValues },
+          `/feedbacks`,
+          { allocation_id: selectedData.id, feedback: { code, subCode, ...fieldValues }},
           {
             headers: {
               'Content-Type': 'application/json',
@@ -352,14 +352,14 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
               {/* Dynamic Fields - Render fields based on selected Code/SubCode */}
               {requiredFields.map((field) => {
                 // Determine if field is for amount or date for input type
-                const isAmountField = ["Amount", "Emi Amount", "BCC Amount", "Total Amount", "Settlement Amount", "Paid Amount"].includes(field);
-                const isDateField = ["Promise to Pay Date", "Callback Date", "Next Payment Date", "Settlement Date", "Settled Date", "PTP Date", "Callback Date/Time", "Next PTP Date", "Settlement Date"].includes(field);
+                const isAmountField = ["amount", "Emi Amount", "BCC Amount", "Total Amount", "Settlement Amount", "Paid Amount"].includes(field);
+                const isDateField = ["ptp_date", "settlement_date", "next_payment_date"].includes(field);
 
                 return (
                   <React.Fragment key={field}>
                     <Grid item xs={12} >
                       {/* Use TextareaAutosize for 'Remarks' and similar fields */}
-                      {(field === "Remarks" || field === "Detailed Feedback" || field === "Dispute Details" || field === "Door Lock Details" || field === "Skip Details") ? (
+                      {(field === "Remarks") ? (
                         <>
                           <Typography variant="body1" flexGrow={1}>
                             {field}
@@ -376,11 +376,11 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                         // Use TextField for other fields, with type determined by field name
                         <TextField
                           fullWidth
-                          label={field}
+                          label={field.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
                           value={fieldValues[field] || ""}
                           onChange={(e) => handleFieldChange(field, e.target.value)}
                           type={isAmountField ? "number" : isDateField ? "date" : "text"} // Set input type based on field type
-                          inputProps={isAmountField ? { step: "0.01" } : {}} // Allow decimal input for amount fields
+                          inputProps={isAmountField ? { step: "0.10" } : {}} // Allow decimal input for amount fields
                           InputLabelProps={isDateField ? { shrink: true } : {}} // Ensure DatePicker label doesn't overlap
                         />
                       )}

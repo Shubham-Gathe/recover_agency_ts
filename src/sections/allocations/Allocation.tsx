@@ -60,7 +60,7 @@ interface AllocationProps {
 
 const sectionStyles = [
   { title: 'Loan Agreement & Terms', color: '#00ACC1', icon: <AccountBalance />, fields: ['agreement_id', 'loan_amt', 'tenure', 'emi_amt', 'emi_od_amt', 'disb_date', 'emi_start_date', 'emi_end_date', 'pos'] },
-  { title: 'Collection & Payment History', color: '#D81B60', icon: <Payment />, fields: ['emi_coll', 'cbc_coll', 'total_coll', 'bcc_pending', 'penal_pending', 'ptp_date', 'feedback', 'res'] },
+  { title: 'Collection & Payment History', color: '#D81B60', icon: <Payment />, fields: ['emi_coll', 'cbc_coll', 'total_coll', 'bcc_pending', 'penal_pending', 'f_code', 'ptp_date', 'feedback', 'res'] },
   { title: 'Borrower & Contact Information', color: '#1E88E5', icon: <Person />, fields: ['customer_name', 'mobile', 'address', 'zipcode', 'phone1', 'phone2', 'reference1_name', 'reference2_name'] },
   { title: 'Asset & Collateral Details', color: '#8E24AA', icon: <Business />, fields: ['manufacturer_desc', 'asset_cat', 'supplier','branch', 'pool', 'segment', 'cycle'] },
   { title: 'Officer & Agent Details', color: '#F57C00', icon: <SupervisorAccount />, fields: ['fos_name', 'fos_mobile_no', 'caller_name', 'caller_mo_number', 'so_name', 'ro_name'] },
