@@ -1,11 +1,14 @@
 // ui/Sidebar.tsx
+import './sidebar.css';
+
 import React from "react";
 import { Link } from "react-router-dom";
-import './sidebar.css';
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store"; 
+
+import type { RootState } from "../../store/store"; 
 
 const Sidebar: React.FC = () => {
+    // @ts-ignore
     const userRole = useSelector((state: RootState) => state.auth.user?.role);
 
     return (

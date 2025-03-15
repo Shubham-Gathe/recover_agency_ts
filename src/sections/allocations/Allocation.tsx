@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, CardContent, Grid, Typography, CardHeader, Avatar } from '@mui/material';
-import { AccountBalance, Person, Payment, SupervisorAccount, LocationOn, Business } from '@mui/icons-material';
+
+import { Card, Grid, Avatar, Typography, CardHeader, CardContent } from '@mui/material';
+import { Person, Payment, Business, LocationOn, AccountBalance, SupervisorAccount } from '@mui/icons-material';
 
 interface RowData {
   id: number;
@@ -67,8 +68,7 @@ const sectionStyles = [
   { title: 'Operational & Routing Information', color: '#43A047', icon: <LocationOn />, fields: [] },
 ];
 
-const Allocation: React.FC<AllocationProps> = ({ row }) => {
-  return (
+const Allocation: React.FC<AllocationProps> = ({ row }) => (
     <Grid container spacing={3} style={{ padding: '20px' }}>
       {sectionStyles.map(({ title, color, icon, fields }, index) => (
         <Grid item xs={12} md={6} key={index}>
@@ -90,6 +90,5 @@ const Allocation: React.FC<AllocationProps> = ({ row }) => {
       ))}
     </Grid>
   );
-};
 
 export default Allocation;

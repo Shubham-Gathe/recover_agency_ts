@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import * as WebDataRocksReact from "@webdatarocks/react-webdatarocks";
 import WebDataRocks from 'webdatarocks';
-import api from 'src/utils/api';
-import { Box, Button, Card, Typography } from '@mui/material';
-import LoadingScreen from 'src/components/ui/LoadingScreen';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+import React, { useRef, useState, useEffect } from 'react';
 
-interface PivotResult {
-  rowKey: string;
-  children?: PivotResult[];
-  columns: Record<string, Record<string, number>>;
-  rowTotals: Record<string, number>;
-}
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import { Box, Card, Button, Typography } from '@mui/material';
+
+import api from 'src/utils/api';
+
+import LoadingScreen from 'src/components/ui/LoadingScreen';
+
+// interface PivotResult {
+//   rowKey: string;
+//   children?: PivotResult[];
+//   columns: Record<string, Record<string, number>>;
+//   rowTotals: Record<string, number>;
+// }
 
 type DataRecord = {
   segment: string;
@@ -80,31 +82,35 @@ const PivotTable: React.FC = () => {
   const [refresh, setRefresh] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
 
-  const renderPivotTable = () => {
-    const container = pivotContainerRef.current;
-    // const container = document.getElementById('pivot-table-container');
-    if (container && !refresh) {
-      console.log('tableData', tableData);
-      new WebDataRocks({
-        container: container,
-        report: {
-          dataSource: {
-            data: tableData,
+  useEffect(() => {
+    const renderPivotTable = () => {
+      const container = pivotContainerRef.current;
+      // const container = document.getElementById('pivot-table-container');
+      if (container && !refresh) {
+        console.log('tableData', tableData);
+        // eslint-disable-next-line no-new
+        new WebDataRocks({
+          container,
+          report: {
+            dataSource: {
+              data: tableData,
+            },
+            slice: {
+              rows: pivotConfig.rows.map(row => ({ uniqueName: row })),
+              columns: pivotConfig.columns.map(col => ({ uniqueName: col })),
+              measures: pivotConfig.values.map(val => ({
+                uniqueName: val.field,
+                aggregation: val.aggregator,
+              })),
+            }
           },
-          slice: {
-            rows: pivotConfig.rows.map(row => ({ uniqueName: row })),
-            columns: pivotConfig.columns.map(col => ({ uniqueName: col })),
-            measures: pivotConfig.values.map(val => ({
-              uniqueName: val.field,
-              aggregation: val.aggregator,
-            })),
-          }
-        },
-      });
-    } else {
-      alert('Pivot table container missing');
+        });
+      } else {
+        alert('Pivot table container missing');
+      }
     }
-  }
+    renderPivotTable();
+  }, [tableData, refresh]);
 
   const getAllocationData = async () => {
     try {
@@ -120,6 +126,7 @@ const PivotTable: React.FC = () => {
       setRefresh(false);
       setTableData(data);
       setLoading(false);
+      console.log(metadata);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -131,15 +138,14 @@ const PivotTable: React.FC = () => {
     }
   }, [refresh]);
 
-  useEffect(() => {
-    if (tableData.length > 0 && !refresh) {
-      renderPivotTable();
-    }
-  }, [tableData]);
+  // useEffect(() => {
+  //   if (tableData.length > 0 && !refresh) {
+  //     renderPivotTable();
+  //   }
+  // }, [tableData, refresh, renderPivotTable]);
 
   return (
-    <>
-      <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3 }}>
         <Box display="flex" alignItems="center" mb={3} sx={{ gap: 2 }}>
           <Typography variant="h4" flexGrow={1}>
             Pivot Table
@@ -154,10 +160,9 @@ const PivotTable: React.FC = () => {
         </Box>
         <Card sx={{ p: 2, overflow: 'auto', minHeight: '80vh' }}>
           <LoadingScreen open={loading} />
-          <div id="pivot-table-container" ref={pivotContainerRef}></div>
+          <div id="pivot-table-container" ref={pivotContainerRef} />
         </Card>
       </Box>
-    </>
   );
 };
 

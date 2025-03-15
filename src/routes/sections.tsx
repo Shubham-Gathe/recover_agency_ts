@@ -1,13 +1,15 @@
 import { lazy, Suspense } from 'react';
-import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-import { useSelector } from 'react-redux'; // Import useSelector
+import { useSelector } from 'react-redux';
+import { Outlet, Navigate, useRoutes } from 'react-router-dom'; // Import useSelector
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
-import { DashboardLayout } from 'src/layouts/dashboard';
 import Allocations from 'src/pages/allocations'
 import MyAllocations from 'src/pages/my-allocations'
+import { DashboardLayout } from 'src/layouts/dashboard';
+
 import PivotTable from 'src/sections/pivot/PivotTable';
 // ----------------------------------------------------------------------
 
@@ -65,9 +67,9 @@ export function Router() {
       children: [
         { path: '/dashboard', element: <HomePage />, index: true },
         { path: '/dashboard/user', element: <UserPage /> },
-        { path:'dashboard/allocations',element: <Allocations/>},
-        { path:'dashboard/my-allocations',element: <MyAllocations/>},
-        { path:'dashboard/pivot-reports',element: <PivotTable/>}
+        { path:'/dashboard/allocations',element: <Allocations/>},
+        { path:'/dashboard/my-allocations',element: <MyAllocations/>},
+        { path:'/dashboard/pivot-reports',element: <PivotTable/>}
       ],
     },
     {

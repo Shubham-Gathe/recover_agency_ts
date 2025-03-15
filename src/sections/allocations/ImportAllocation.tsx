@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import { Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+
+import { Alert, Dialog, Button, Snackbar, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+
 import api from "src/utils/api";
 
-interface ImportAllocation {
+interface ImportAllocationProps {
   open: boolean;
   onClose: () => void;
   refreshData: () => void;
 }
 
-const ImportAllocation: React.FC<ImportAllocation> = ({open, onClose, refreshData}) => {
+const ImportAllocation: React.FC<ImportAllocationProps> = ({open, onClose, refreshData}) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // @ts-expect-error

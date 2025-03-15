@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+
 import {
     Dialog,
+    Button,
+    MenuItem,
+    TextField,
+    DialogTitle,
     DialogActions,
     DialogContent,
-    DialogTitle,
-    Button,
-    TextField,
-    MenuItem,
 } from '@mui/material';
+
 import type { UserProps } from '../user-table-row';
 
 type AddUserDialogProps = {
@@ -17,6 +19,8 @@ type AddUserDialogProps = {
     onAddUser: (user: UserProps) => void;
     editingUser: UserProps | null;
 };
+// const apiUrl = '/api';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUserDialogProps) {
     const [newUser, setNewUser] = useState<UserProps>({
@@ -41,7 +45,7 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
     const addUser = async () => {
         const postUser = {...newUser,type:newUser.role}
         try {
-            await axios.post('http://16.171.247.65:3000/sign_up', postUser);
+            await axios.post(`${apiUrl}/sign_up`, postUser);
         } catch (error) {
             console.error('Error adding user:', error);
         }

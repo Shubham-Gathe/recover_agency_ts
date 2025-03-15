@@ -1,8 +1,11 @@
+import type { SubmitHandler } from 'react-hook-form';
+
 import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+
 import { addUser } from '../store/authSlice'; // Import your addUser action
-import { AppDispatch } from '../store/store';
+import type { AppDispatch } from '../store/store';
 
 interface FormValues {
   name: string;

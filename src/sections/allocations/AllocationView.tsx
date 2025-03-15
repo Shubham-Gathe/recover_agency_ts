@@ -1,26 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import type { GridColDef } from '@mui/x-data-grid';
+
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+
+import { DataGrid } from '@mui/x-data-grid';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import {
   Box,
   Card,
+  Paper,
   Button,
   Typography,
   TableContainer,
-  Paper,
 } from "@mui/material";
+
+import api from "src/utils/api";
+
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
+import LoadingScreen from "src/components/ui/LoadingScreen";
+
+import Allocation from "./Allocation";
 import AssignDialog from './AssignDialog';
 import FloatingPanel from "./FloatingPanel";
+import FeedbackDialog from "./FeedbackDialog";
 import ImportAllocation from "./ImportAllocation";
-import api from "src/utils/api";
 import ExportAllocation from "./ExportAllocation";
 import SearchAllocations from "./SearchAllocations";
-import Allocation from "./Allocation";
-import LoadingScreen from "src/components/ui/LoadingScreen";
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import FeedbackDialog from "./FeedbackDialog";
+
 interface RowData {
   id: number;
   segment: string;
@@ -89,7 +96,7 @@ const AllocationView = () => {
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
   const [openFeedbackDialog, setOpenFeedbackDialog] = useState(false);
 
-  const defaultColumns: GridColDef[] = [
+  const defaultColumns: GridColDef[] = useMemo(() => [
     {
       field: "actions",
       headerName: "Actions",
@@ -162,7 +169,7 @@ const AllocationView = () => {
     { field: "updated_at", headerName: "Updated At", width: 200, editable: true },
     { field: "caller_id", headerName: "Caller ID", width: 150, editable: true },
     { field: "executive_id", headerName: "Executive ID", width: 150, editable: true },
-  ];
+  ], []);
 
   const storedVisibility = JSON.parse(localStorage.getItem('columnVisibility') || '{}');
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(
@@ -175,7 +182,7 @@ const AllocationView = () => {
   useEffect(() => {
     const updatedVisibleColumns = defaultColumns.filter((col) => columnVisibility[col.field] !== false);
     setVisibleColumns(updatedVisibleColumns);
-  }, [columnVisibility]);
+  }, [columnVisibility, defaultColumns]);
 
   useEffect(() => {
     localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
@@ -197,7 +204,6 @@ const AllocationView = () => {
   // };
 
   const mySaveOnServerFunction = async (updatedRow: any, originalRow: any) => {
-    console.log('updatedRow', updatedRow);
     setLoading(true);
     try {
       const response = await api.put(`/allocation_drafts/${updatedRow.id}`, { 'data': updatedRow }, {
@@ -216,11 +222,10 @@ const AllocationView = () => {
   };
 
   const handleProcessRowUpdateError = () => {
-    console.log('-----------handleProcessRowUpdateError-----------');
+    console.error('error occurred in handleProcessRowUpdateError');
   }
 
   const handleShowDetails = (row: RowData) => {
-    console.log('handleShowDetails', row);
     setSelectedRow(row); // Show detailed allocation view
   };
 
@@ -238,7 +243,7 @@ const AllocationView = () => {
   };
   const handleCloseFeedbackDialog = () => setOpenFeedbackDialog(false);
 
-  const fetchPage = async () => {
+  const fetchPage = useCallback(async () => {
     try {
       setLoading(true);
       const params: any = {
@@ -250,7 +255,7 @@ const AllocationView = () => {
       if (searchQuery && searchFields.length > 0) {
         params.q = {
           groupings: searchFields.map(field => ({
-            [field + '_cont']: searchQuery
+            [`${field  }_cont`]: searchQuery
           }))
         };
       }
@@ -270,7 +275,7 @@ const AllocationView = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }, [setLoading, paginationModel, searchQuery, searchFields, setTotalRows, setRows]);
 
   const handleReset = () => {
     setSearchQuery(''); // Clear search query
@@ -287,7 +292,7 @@ const AllocationView = () => {
 
   useEffect(() => {
     fetchPage();
-  }, [paginationModel, searchQuery, searchFields]);
+  }, [paginationModel, searchQuery, searchFields, fetchPage]);
 
   return (
     <>
@@ -351,7 +356,7 @@ const AllocationView = () => {
               </Button>
             </Paper>
             <Allocation row={selectedRow} />
-            { selectedRow && <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} selectedData={selectedRow} />}
+            <FeedbackDialog isOpen={openFeedbackDialog} onClose={handleCloseFeedbackDialog} selectedData={selectedRow} />
           </Card>
         ) : (
           // Show the DataGrid when no row is selected

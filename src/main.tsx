@@ -1,11 +1,11 @@
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom/client';
 import { Suspense, StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 
 import App from './app';
-import { store, persistor } from './store/store';
+import { store } from './store/store';
 
 // ----------------------------------------------------------------------
 

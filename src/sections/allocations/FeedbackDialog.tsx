@@ -1,26 +1,29 @@
-import React, { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
+import React, { useMemo, useState, useEffect } from "react";
+
 import {
+  Grid,
+  Paper,
+  Alert,
   Dialog,
+  Button,
+  Select,
+  MenuItem,
+  Snackbar,
+  TextField,
+  InputLabel,
+  Typography,
   DialogTitle,
+  FormControl,
   DialogContent,
   DialogActions,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  TextField,
-  Grid,
-  TextareaAutosize,
-  Typography,
-  CircularProgress,
-  Paper,
-  Snackbar,
-  Alert,
   FormHelperText,
+  TextareaAutosize,
+  CircularProgress,
 } from "@mui/material";
-import { useSelector } from 'react-redux';
+
 import api from "src/utils/api";
+
 interface RowData {
   id: number;
   segment: string;
@@ -132,7 +135,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
               'ngrok-skip-browser-warning': 'true',
             },
           });
-          const data = response.data;
+          const {data} = response;
           // Transform the array response into an object keyed by 'code' with correct types
           const configObject: ApiCodeConfigurations = data.reduce((acc: ApiCodeConfigurations, feedbackCode: FeedbackCodeFromApi) => {
             acc[feedbackCode.code] = {
@@ -155,7 +158,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     };
 
     fetchFeedbackCodes();
-  }, [isOpen]);
+  }, [isOpen, selectedData]);
   // Handler for Code dropdown change
   const handleCodeChange = (event: any) => {
     const selectedCode = event.target.value;
@@ -200,7 +203,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     setSubmitLoading(true);
     setFieldErrors({});
     // Fields to validate, initially same as requiredFields
-    let fieldsToValidate = [...requiredFields];
+    const fieldsToValidate = [...requiredFields];
 
     // Conditionally add "resolution" to validation for PAID code
     if (code === "PAID") {
@@ -210,13 +213,13 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     // Validate that all required fields (and resolution for PAID) are filled
     const isValid = fieldsToValidate.every((field) => {
       if (field === "resolution" && code !== "PAID") return true; // Exclude resolution validation for non-PAID codes
-      return fieldValues.hasOwnProperty(field) && fieldValues[field] !== "";
+      return Object.hasOwn(fieldValues, field) && fieldValues[field] !== "";
     });
 
     if (!isValid && fieldsToValidate.length > 0) { // Only show alert if there are fields to validate
       const errors: FieldErrors = {};
       fieldsToValidate.forEach(field => {
-        if (!(fieldValues.hasOwnProperty(field) && fieldValues[field] !== "")) {
+        if (!(Object.hasOwn(fieldValues, field) && fieldValues[field] !== "")) {
           errors[field] = ["This field is required"]; // Set error message for each invalid field
         }
       });
@@ -229,7 +232,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
       try {
         const response = await api.post(
           `/feedbacks`,
-          { allocation_id: selectedData.id, feedback: { code, subCode, ...fieldValues }},
+          { allocation_id: selectedData.id, feedback: { code, subCode, ...fieldValues } },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -239,7 +242,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
         )
         setSnackbar({
           message: response.data.message,
-          severity: response.status == 200 ? "success" : "error"
+          severity: response.status === 200 ? "success" : "error"
         });
         setOpenSnackbar(true);
 
@@ -252,7 +255,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
         }, 3500);
       } catch (error) {
         if (error.response?.data?.errors) {
-          setFieldErrors(error.response.data.errors); 
+          setFieldErrors(error.response.data.errors);
         }
         setSnackbar({
           message: error.response?.data?.message || "Something went wrong!",
@@ -275,14 +278,15 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
     const allCodes = Object.keys(apiCodeConfigurations);
     if (user && user.role.toLowerCase() === 'caller') {
       return allCodes.filter(codeKey => apiCodeConfigurations[codeKey].category === 'CALLING' || apiCodeConfigurations[codeKey].category === 'BOTH');
-    } else if (user && user.role.toLowerCase() === 'executive') {
+    } if (user && user.role.toLowerCase() === 'executive') {
       return allCodes.filter(codeKey => apiCodeConfigurations[codeKey].category === 'VISIT' || apiCodeConfigurations[codeKey].category === 'BOTH');
-    } else {
+    } 
       return allCodes;
-    }
+    
   };
   const filteredCodes = getFilteredCodes(); // Get codes filtered by user role
-  const orderedCodes = ["PAID", "PPD", ...filteredCodes.filter(codeKey => codeKey !== "PAID" && codeKey !== "PPD").sort()]; // Order codes: PAID, PPD first, then others alphabetically
+
+  const orderedCodes = useMemo(() => ["PAID", "PPD", ...filteredCodes.filter(codeKey => codeKey !== "PAID" && codeKey !== "PPD").sort()], [filteredCodes]);
 
   useEffect(() => {
   }, [filteredCodes, orderedCodes, apiCodeConfigurations]);
@@ -391,7 +395,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                           inputProps={isAmountField ? { step: "0.10" } : {}} // Allow decimal input for amount fields
                           InputLabelProps={isDateField ? { shrink: true } : {}} // Ensure DatePicker label doesn't overlap
                           error={!!fieldErrors[field]}
-                          helperText={fieldErrors[field]?.[0]} 
+                          helperText={fieldErrors[field]?.[0]}
                         />
                       )}
                     </Grid>
@@ -404,21 +408,21 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                 <Grid item xs={12}>
                   <FormControl
                     fullWidth
-                    error={!!fieldErrors['resolution']}
+                    error={!!fieldErrors.resolution}
                   >
                     <InputLabel>Resolution</InputLabel>
                     <Select
-                      value={fieldValues["resolution"] || ""}
-                      onChange={(e) => handleFieldChange("resolution", e.target.value)}                      
+                      value={fieldValues.resolution || ""}
+                      onChange={(e) => handleFieldChange("resolution", e.target.value)}
                     >
                       {/* Render Resolution options */}
                       {resolutionOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
-                          {option.label + ' (' + option.value + ')'}
+                          {`${option.label  } (${  option.value  })`}
                         </MenuItem>
                       ))}
                     </Select>
-                    <FormHelperText>{fieldErrors["resolution"]?.[0]}</FormHelperText>
+                    <FormHelperText>{fieldErrors.resolution?.[0]}</FormHelperText>
                   </FormControl>
                 </Grid>
               )}

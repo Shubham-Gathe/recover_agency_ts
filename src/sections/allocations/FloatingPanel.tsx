@@ -1,6 +1,9 @@
 import React from "react";
+import { Filter } from "lucide-react";
 import Draggable from "react-draggable";
-import { Filter } from "lucide-react"; // Import the filter icon
+
+import { Close as CloseIcon } from '@mui/icons-material';
+import { Box, Fab, Checkbox, IconButton, Typography, FormControlLabel } from '@mui/material'; // Or any close icon from MUI Icons
 
 interface FloatingPanelProps {
   defaultColumns: { field: string; headerName: string }[];
@@ -17,8 +20,8 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({ defaultColumns, visibleCo
 
   return (
     <Draggable>
-      <div
-        style={{
+      <Box
+        sx={{
           position: "fixed",
           bottom: "20px",
           right: "20px",
@@ -28,30 +31,24 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({ defaultColumns, visibleCo
       >
         {/* Floating Button */}
         {!isExpanded && (
-          <button
+          <Fab
+            color="primary"
+            aria-label="filter"
             onClick={toggleExpand}
-            style={{
-              backgroundColor: "#007bff",
-              border: "none",
-              borderRadius: "50%",
-              width: "60px",
-              height: "60px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+            sx={{
+              width: 60,
+              height: 60,
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-              cursor: "pointer",
-              color: "#fff",
             }}
           >
-            <Filter size={24} />
-          </button>
+            <Filter size={24} color="#fff" />
+          </Fab>
         )}
 
         {/* Expandable Panel */}
         {isExpanded && (
-          <div
-            style={{
+          <Box
+            sx={{
               width: "300px",
               height: "400px",
               backgroundColor: "#fff",
@@ -59,46 +56,46 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({ defaultColumns, visibleCo
               padding: "16px",
               position: "relative",
               cursor: "default",
-              overflowY: 'scroll' 
+              overflowY: 'scroll'
             }}
           >
-            <button
+            <IconButton
+              aria-label="close"
               onClick={toggleExpand}
-              style={{
+              sx={{
                 position: "absolute",
                 top: "8px",
                 right: "8px",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
               }}
             >
-              <Filter size={24} style={{ color: "#333" }} />
-            </button>
+              <CloseIcon />
+            </IconButton>
 
-            <div style={{ marginTop: "40px" }}>
-              <h4 style={{ marginBottom: "16px", fontWeight: "bold", fontSize: "18px" }}>
+            <Box sx={{ marginTop: "40px" }}>
+              <Typography variant="h6" sx={{ marginBottom: "16px", fontWeight: "bold", fontSize: "18px" }}>
                 Manage Columns
-              </h4>
+              </Typography>
               {defaultColumns.map((col) => (
-                <div key={col.field} style={{ marginBottom: "8px" }}>
-                  <label style={{ display: "flex", alignItems: "center" }}>
-                    <input
-                      type="checkbox"
-                      style={{ marginRight: "8px" }}
-                      checked={visibleColumns.some(
-                        (visibleCol) => visibleCol.field === col.field
-                      )}
-                      onChange={(e) => onChange(col.field, e.target.checked)}
-                    />
-                    {col.headerName}
-                  </label>
-                </div>
+                <Box key={col.field} sx={{ marginBottom: "8px" }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={visibleColumns.some(
+                          (visibleCol) => visibleCol.field === col.field
+                        )}
+                        onChange={(e) => onChange(col.field, e.target.checked)}
+                        sx={{ marginRight: "8px" }}
+                      />
+                    }
+                    label={col.headerName}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  />
+                </Box>
               ))}
-            </div>
-          </div>
+            </Box>
+          </Box>
         )}
-      </div>
+      </Box>
     </Draggable>
   );
 };

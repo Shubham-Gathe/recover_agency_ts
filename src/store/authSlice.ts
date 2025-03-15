@@ -1,5 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+
 import axios from 'axios';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 interface User {
   id: number;
@@ -36,6 +38,7 @@ const initialState: AuthState = {
   error: null,
 };
 
+// const apiUrl = '/api';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const setToken = (token: string) => {

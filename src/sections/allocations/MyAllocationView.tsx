@@ -1,21 +1,28 @@
 // import { useQueryClient } from 'react-query';
-import React, { useState, useEffect } from "react";
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
+import type { GridColDef, GridRowParams } from '@mui/x-data-grid';
+
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+
+import { DataGrid } from '@mui/x-data-grid';
 import {
   Box,
   Card,
+  Paper,
+  Button,
   Typography,
   TableContainer,
-  Button,
-  Paper,
 } from "@mui/material";
-import { Scrollbar } from "src/components/scrollbar";
-import FloatingPanel from "./FloatingPanel";
+
 import api from "src/utils/api";
-import ExportAllocation from "./ExportAllocation";
-import Allocation from "./Allocation";
+
 import { Iconify } from "src/components/iconify";
+import { Scrollbar } from "src/components/scrollbar";
+
+import Allocation from "./Allocation";
+import FloatingPanel from "./FloatingPanel";
 import FeedbackDialog from "./FeedbackDialog";
+import ExportAllocation from "./ExportAllocation";
+
 interface RowData {
   id: number;
   segment: string;
@@ -76,7 +83,7 @@ const MyAllocationView = () => {
     page: 0,
     pageSize: 10,
   });
-  const defaultColumns: GridColDef[] = [
+  const defaultColumns: GridColDef[] = useMemo(() => [
     // { field: "serialNumber", headerName: "Sr.No", width: 90 },
     { field: "id", headerName: "ID", width: 90 },
     { field: "customer_name", headerName: "Customer Name", width: 200 },
@@ -127,7 +134,7 @@ const MyAllocationView = () => {
     { field: "updated_at", headerName: "Updated At", width: 200 },
     { field: "caller_id", headerName: "Caller ID", width: 150 },
     { field: "executive_id", headerName: "Executive ID", width: 150 },
-  ];
+  ], []);
   // Initializing column visibility state
   const storedVisibility = JSON.parse(localStorage.getItem('columnVisibility') || '{}');
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(
@@ -143,7 +150,7 @@ const MyAllocationView = () => {
     // Update visible columns whenever columnVisibility changes
     const updatedVisibleColumns = defaultColumns.filter((col) => columnVisibility[col.field] !== false);
     setVisibleColumns(updatedVisibleColumns);
-  }, [columnVisibility]);
+  }, [columnVisibility, defaultColumns]);
 
   useEffect(() => {
     // Save column visibility preferences to localStorage whenever columnVisibility changes
@@ -168,8 +175,9 @@ const MyAllocationView = () => {
   const handleFeedbackDialog = () => setOpenFeedbackDialog(true);
   const handleCloseFeedbackDialog = () => setOpenFeedbackDialog(false);
 
-  const fetchPage = async () => {
+  const fetchPage = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await api.get(`/dashboards/get_allocations`, {
         headers: {
           'Content-Type': 'application/json',
@@ -182,17 +190,19 @@ const MyAllocationView = () => {
       });
 
       const { data, metadata, message } = response.data; // Assuming response includes data and metadata
+      console.log(message);
       setTotalRows(metadata.total);
       setRows(data); // Set the data to be displayed in the DataGrid
       // Set total number of rows for pagination
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }, [paginationModel.pageSize, paginationModel.page]);
 
   useEffect(() => {
     fetchPage();
-  }, [paginationModel]);
+  }, [paginationModel, fetchPage]);
   return (
     <>
       {/* Column Visibility Panel */}

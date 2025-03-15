@@ -1,24 +1,21 @@
-import React, { useState, useCallback } from 'react';
-import { debounce } from 'src/utils/debounce';
-import api from 'src/utils/api';
+import React, { useState } from 'react';
+
+import SearchIcon from '@mui/icons-material/Search';
 import {
-  TextField,
-  FormControl,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
-  Button,
-  Popover,
-  Typography,
   Box,
   Card,
+  Button,
+  Popover,
+  Checkbox,
+  TextField,
+  FormGroup,
+  Typography,
+  FormControl,
+  CircularProgress,
+  FormControlLabel,
 } from '@mui/material';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
-import SearchIcon from '@mui/icons-material/Search';
+
+
 interface SearchAllocationsProps {
   onSearch: (query: string, fields: string[]) => void;
   onReset: () => void;
@@ -28,20 +25,20 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
   const [fields, setFields] = useState<string[]>(['name']);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const getAllocations = async (query: string, fields: string[]) => {
-    try {
-      const params = {
-        q: {
-          groupings: fields.map((field) => ({ [field + '_cont']: query })),
-        },
-      };
-      const response = await api.get(`/dashboards/get_allocations`, { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching allocations:', error);
-      throw error;
-    }
-  };
+  // const getAllocations = async (query: string, fields: string[]) => {
+  //   try {
+  //     const params = {
+  //       q: {
+  //         groupings: fields.map((field) => ({ [`${field  }_cont`]: query })),
+  //       },
+  //     };
+  //     const response = await api.get(`/dashboards/get_allocations`, { params });
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Error fetching allocations:', error);
+  //     throw error;
+  //   }
+  // };
 
   const handleSearch = async () => {
     if (query.trim()) {

@@ -1,11 +1,13 @@
+import type { ReactNode } from 'react';
+import type { RootState } from 'src/store/store';
+
 import { useSelector } from 'react-redux';
-import { RootState } from 'src/store/store';
-import { SvgColor } from 'src/components/svg-color';
-import { ReactNode } from 'react';
+
 import GroupIcon from '@mui/icons-material/Group';
-import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
-import TableChartIcon from '@mui/icons-material/TableChart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
+
 // Define the structure for navigation items
 interface NavItem {
   title: string;
@@ -15,11 +17,12 @@ interface NavItem {
 }
 
 // Icon helper function
-const icon = (name: string): ReactNode => (
-  <SvgColor width="100%" height="100%" src={`/assets/icons/navbar/${name}.svg`} />
-);
+// const icon = (name: string): ReactNode => (
+//   <SvgColor width="100%" height="100%" src={`/assets/icons/navbar/${name}.svg`} />
+// );
 
 export const useNavData = (): NavItem[] => {
+  // @ts-ignore
   const userRole = useSelector((state: RootState) => state.auth.user?.role || '');
 
   // Common links for all users

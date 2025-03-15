@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { RootState, AppDispatch } from 'src/store/store'; // Adjust the import path
+import React, { useState, useEffect } from 'react';
+
+// Adjust the import path
+
 import {
+  Alert,
   Dialog,
+  Button,
+  Select,
+  MenuItem,
+  Snackbar,
+  TextField,
+  InputLabel,
   DialogTitle,
+  FormControl,
+  Autocomplete,
   DialogContent,
   DialogActions,
-  Button,
-  MenuItem,
-  Select,
   CircularProgress,
-  FormControl,
-  InputLabel,
-  Autocomplete,
-  TextField,
-  Snackbar,
-  Alert,
 } from '@mui/material';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { UserProps } from '../user/user-table-row';
+
 import api from 'src/utils/api';
+
 
 interface User {
   id: number;
@@ -43,7 +44,6 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL
 
   // Fetch users from the API
   useEffect(() => {
@@ -67,7 +67,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
     };
 
     fetchUsers();
-  }, [open, apiUrl]);
+  }, [open]);
 
   // Filter users based on the selected user type
   useEffect(() => {
@@ -88,7 +88,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
 
     setIsLoading(true);
     setError('');
-    let payload, endPoint;
+    let payload; let endPoint;
     if(userType === 'caller') {
       payload = {
         caller_id: selectedUser.id, // The selected user's ID

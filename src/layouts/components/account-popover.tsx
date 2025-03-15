@@ -1,6 +1,8 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
+
 import { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -10,7 +12,9 @@ import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
+
 import { useRouter, usePathname } from 'src/routes/hooks';
+
 import { logout } from '../../store/authSlice';
 
 // ----------------------------------------------------------------------

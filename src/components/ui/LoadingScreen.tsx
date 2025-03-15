@@ -1,13 +1,13 @@
 import React from 'react';
-import { Backdrop, CircularProgress, Typography, Box } from '@mui/material';
+
+import { Box, Backdrop, Typography, CircularProgress } from '@mui/material';
 
 interface LoadingScreenProps {
   open: boolean;
   message?: string;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ open, message = 'Loading...' }) => {
-  return (
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ open, message = 'Loading...' }) => (
     <Backdrop
       sx={{
         color: '#fff',
@@ -23,6 +23,5 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ open, message = 'Loading.
       </Box>
     </Backdrop>
   );
-};
 
 export default LoadingScreen;

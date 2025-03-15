@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from 'src/store/authSlice';
-import { RootState, AppDispatch } from 'src/store/store';
+import type { SubmitHandler } from 'react-hook-form';
+import type { RootState, AppDispatch } from 'src/store/store';
+
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert'; // ✅ Improved Error UI
+
+import { login } from 'src/store/authSlice'; // ✅ Improved Error UI
 import { Iconify } from 'src/components/iconify';
 
 interface LoginFormValues {
@@ -23,6 +26,7 @@ interface LoginFormValues {
 export function SignInView() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  // @ts-ignore
   const { loading, error, isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -40,9 +44,10 @@ export function SignInView() {
     }
 
     if (isAuthenticated) {
+        console.log('user', user);
         navigate('/dashboard');      
     }
-  }, [error, isAuthenticated, navigate]);
+  }, [error, isAuthenticated, navigate, user]);
 
   return (
     <>

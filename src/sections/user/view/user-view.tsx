@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from 'src/store/store';
+
 import {
   Box,
   Card,
@@ -13,11 +11,15 @@ import {
   TablePagination,
 } from '@mui/material';
 
+import api from 'src/utils/api';
+
 import { DashboardContent } from 'src/layouts/dashboard';
+
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
+import { AddUserDialog } from './AddUserDialog';
 import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
@@ -25,11 +27,7 @@ import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../user-table-row';
-import { AddUserDialog } from './AddUserDialog';
 
-interface ApiResponse {
-  users: UserProps[]; // Assuming the API response has a 'users' property
-}
 // ----------------------------------------------------------------------
 export function UserView() {
   const table = useTable();
@@ -38,16 +36,13 @@ export function UserView() {
   const [editingUser, setEditingUser] = useState<UserProps | null>(null);
   const [users, setUsers] = useState<UserProps[]>([]);
   const [loading, setLoading] = useState(true);
-  const token = useSelector((state: RootState) => state.auth.token);
-  const apiUrl = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>(`${apiUrl}/user_block/users`, {
+        const response = await api.get('/user_block/users', {
           headers: {
-            Authorization: token,
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true',
           },
@@ -60,7 +55,7 @@ export function UserView() {
       }
     };
     fetchUsers();
-  }, [token]);
+  }, []);
 
   const dataFiltered: UserProps[] = applyFilter({
     inputData: users,

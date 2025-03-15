@@ -1,9 +1,11 @@
 import axios from 'axios';
+
 import { store } from 'src/store/store';
 import { logout } from 'src/store/authSlice';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  // baseURL: '/api',
 });
 
 // **Attach token to requests**
