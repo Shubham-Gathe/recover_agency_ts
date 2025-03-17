@@ -24,7 +24,7 @@ export function NotFoundView() {
 
         <Box
           component="img"
-          src="/assets/illustrations/illustration-404.svg"
+          src="/maa_sharda_app/assets/illustrations/illustration-404.svg"
           sx={{
             width: 320,
             height: 'auto',
@@ -32,7 +32,7 @@ export function NotFoundView() {
           }}
         />
 
-        <Button component={RouterLink} href="/" size="large" variant="contained" color="inherit">
+        <Button component={RouterLink} href="/maa_sharda_app/" size="large" variant="contained" color="inherit">
           Go to home
         </Button>
       </Container>

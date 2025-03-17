@@ -8,6 +8,7 @@ import react from '@vitejs/plugin-react-swc';
 const PORT = 3000;
 
 export default defineConfig({
+  base: '/maa_sharda_app/',
   plugins: [
     react(),
     checker({

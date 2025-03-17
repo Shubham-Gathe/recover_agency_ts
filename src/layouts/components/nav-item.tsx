@@ -29,7 +29,7 @@ export const useNavData = (): NavItem[] => {
   const commonNav: NavItem[] = [
     {
       title: 'Dashboard',
-      path: '/',
+      path: '/maa_sharda_app/',
       icon: <DashboardIcon/>,
     },
     // {
@@ -43,17 +43,17 @@ export const useNavData = (): NavItem[] => {
   const adminNav: NavItem[] = [
     {
       title: 'All Users',
-      path: '/dashboard/user',
+      path: '/maa_sharda_app/dashboard/user',
       icon: <GroupIcon/>,
     },
     {
       title: 'Allocations',
-      path: '/dashboard/allocations',
+      path: '/maa_sharda_app/dashboard/allocations',
       icon: <TableChartIcon/>,
     },
     {
       title: 'Pivot Chart',
-      path: 'dashboard/pivot-reports',
+      path: '/maa_sharda_app/dashboard/pivot-reports',
       icon: <PivotTableChartIcon/>,
     },
   ];
@@ -62,7 +62,7 @@ export const useNavData = (): NavItem[] => {
   const userNav: NavItem[] = [
     {
       title: 'My Allocations',
-      path: '/dashboard/my-allocations',
+      path: '/maa_sharda_app/dashboard/my-allocations',
       icon: <TableChartIcon/>,
     },
   ];

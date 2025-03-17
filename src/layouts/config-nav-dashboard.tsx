@@ -9,17 +9,17 @@ const icon = (name: string) => (
 export const navData = [
   {
     title: 'Dashboard',
-    path: '/',
+    path: '/maa_sharda_app/',
     icon: icon('ic-analytics'),
   },
   {
     title: 'All Users',
-    path: '/dashboard/user',
+    path: '/maa_sharda_app/dashboard/user',
     icon: icon('ic-user'),
   },
   {
     title: 'Allocations',
-    path: '/dashboard/allocations',
+    path: '/maa_sharda_app/dashboard/allocations',
     icon: icon('ic-user'),
   },
   // {

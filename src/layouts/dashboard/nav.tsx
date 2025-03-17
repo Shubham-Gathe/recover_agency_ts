@@ -122,7 +122,7 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
     const accountData = [
                       {
                         label: 'Home',
-                        href: '/',
+                        href: '/maa_sharda_app/',
                         icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" />,
                       },
                       {

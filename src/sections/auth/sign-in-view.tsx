@@ -44,8 +44,7 @@ export function SignInView() {
     }
 
     if (isAuthenticated) {
-        console.log('user', user);
-        navigate('/dashboard');      
+        navigate('/maa_sharda_app/dashboard');      
     }
   }, [error, isAuthenticated, navigate, user]);
 

@@ -39,7 +39,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
   if (!isAuthenticated) {
     // Redirect to sign-in if not authenticated
-    return <Navigate to="/" replace />;
+    return <Navigate to="/maa_sharda_app/" replace />;
   }
 
   return children;
@@ -47,7 +47,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 export function Router() {
   return useRoutes([
     {
-      path: '/',
+      path: '/maa_sharda_app/',
       element: (
         <AuthLayout>
           <SignInPage />
@@ -65,20 +65,20 @@ export function Router() {
         </ProtectedRoute>
       ),
       children: [
-        { path: '/dashboard', element: <HomePage />, index: true },
-        { path: '/dashboard/user', element: <UserPage /> },
-        { path:'/dashboard/allocations',element: <Allocations/>},
-        { path:'/dashboard/my-allocations',element: <MyAllocations/>},
-        { path:'/dashboard/pivot-reports',element: <PivotTable/>}
+        { path: '/maa_sharda_app/dashboard', element: <HomePage />, index: true },
+        { path: '/maa_sharda_app/dashboard/user', element: <UserPage /> },
+        { path:'/maa_sharda_app/dashboard/allocations',element: <Allocations/>},
+        { path:'/maa_sharda_app/dashboard/my-allocations',element: <MyAllocations/>},
+        { path:'/maa_sharda_app/dashboard/pivot-reports',element: <PivotTable/>}
       ],
     },
     {
-      path: '/404',
+      path: '/maa_sharda_app/404',
       element: <Page404 />,
     },
     {
       path: '*',
-      element: <Navigate to="/404" replace />,
+      element: <Navigate to="/maa_sharda_app/404" replace />,
     },
   ]);
 }

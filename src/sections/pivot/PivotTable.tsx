@@ -87,7 +87,6 @@ const PivotTable: React.FC = () => {
       const container = pivotContainerRef.current;
       // const container = document.getElementById('pivot-table-container');
       if (container && !refresh) {
-        console.log('tableData', tableData);
         // eslint-disable-next-line no-new
         new WebDataRocks({
           container,
@@ -106,7 +105,7 @@ const PivotTable: React.FC = () => {
           },
         });
       } else {
-        alert('Pivot table container missing');
+        console.error('Pivot table container missing');
       }
     }
     renderPivotTable();
