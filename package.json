@@ -1,8 +1,8 @@
 {
-  "name": "@minimal/material-kit-react",
-  "author": "minimals.cc",
+  "name": "maa-sharda-app",
+  "author": "proxima-cloud",
   "licence": "MIT",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "private": false,
   "type": "module",
   "scripts": {

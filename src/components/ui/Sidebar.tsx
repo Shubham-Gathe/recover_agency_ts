@@ -9,7 +9,7 @@ import type { RootState } from "../../store/store";
 
 const Sidebar: React.FC = () => {
     // @ts-ignore
-    const userRole = useSelector((state: RootState) => state.auth.user?.role);
+    const userRole = useSelector((state: RootState) => state.auth.user?.type);
 
     return (
         <div className="sidebar">

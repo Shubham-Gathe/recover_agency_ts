@@ -23,7 +23,7 @@ interface NavItem {
 
 export const useNavData = (): NavItem[] => {
   // @ts-ignore
-  const userRole = useSelector((state: RootState) => state.auth.user?.role || '');
+  const userRole = useSelector((state: RootState) => state.auth.user?.type || '');
 
   // Common links for all users
   const commonNav: NavItem[] = [

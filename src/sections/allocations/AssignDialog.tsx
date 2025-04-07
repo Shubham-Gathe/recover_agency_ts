@@ -26,14 +26,20 @@ interface User {
   id: number;
   name: string;
   email?: string;
-  role?: string;
+  type?: string;
 }
 
 interface AssignDialogProps {
   open: boolean;
   onClose: () => void;
-  selectedRows: { id: number; [key: string]: any }[]; // Selected rows to assign
+  selectedRows: { id: number;[key: string]: any }; // Selected rows to assign
   refreshData: () => void;
+}
+
+interface SnackbarState {
+  open: boolean;
+  message: string;
+  severity: 'success' | 'info' | 'warning' | 'error' | undefined;
 }
 
 const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows, refreshData }) => {
@@ -42,8 +48,12 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  // Removed error and openErrorSnackbar
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    severity: undefined,
+  });
 
   // Fetch users from the API
   useEffect(() => {
@@ -59,8 +69,12 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
           },
         });
         setUsers(response.data.users);
-      } catch (err) {
-        setError('Failed to load users.');
+      } catch (error: any) {
+        setSnackbar({
+          open: true,
+          message: error.response?.data?.message || 'Failed to load users.',
+          severity: 'error',
+        });
       } finally {
         setIsLoading(false);
       }
@@ -73,8 +87,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
   useEffect(() => {
     setFilteredUsers(
       users.filter((user) =>
-      // @ts-ignore
-        (user && userType === 'caller') ? user.role.includes('Caller') : user.role.includes('Executive')
+        (user && userType === 'caller') ? user.type?.includes('Caller') : user.type?.includes('Executive')
       )
     );
     setSelectedUser(null); // Reset the selected user when user type changes
@@ -82,14 +95,17 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
 
   const handleAssign = async () => {
     if (!selectedUser) {
-      setError('Please select a user.');
+      setSnackbar({
+        open: true,
+        message: 'Please select a user.',
+        severity: 'warning',
+      });
       return;
     }
 
     setIsLoading(true);
-    setError('');
     let payload; let endPoint;
-    if(userType === 'caller') {
+    if (userType === 'caller') {
       payload = {
         caller_id: selectedUser.id, // The selected user's ID
         allocation_draft_ids: selectedRows, // Array of selected row IDs
@@ -106,28 +122,20 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
     try {
       const response = await api.post(`/allocation_drafts/assign_${endPoint}`,
         payload
-      )
-        refreshData();
-        setOpenErrorSnackbar(true);
-        setTimeout(() => {
-          setOpenErrorSnackbar(false);
-        }, 3000);
-        <Alert 
-          severity="error" 
-          sx={{ width: '100%' }} 
-          onClose={() => setOpenErrorSnackbar(false)}
-        >
-          {response.data.message}
-        </Alert>
-      
+      );
+      refreshData();
+      setSnackbar({
+        open: true,
+        message: response.data.message || 'Rows assigned successfully!',
+        severity: 'success',
+      });
       onClose();
-    } catch (err) {
-      setError(err);
-      setOpenErrorSnackbar(true);
-      setTimeout(() => {
-        setOpenErrorSnackbar(false);
-      }, 3000);
-      setError('Failed to assign rows. Please try again.');
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || 'Failed to assign rows. Please try again.',
+        severity: 'error',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -164,7 +172,7 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
             )}
             disabled={isLoading}
           />
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {snackbar.severity === 'warning' && <p style={{ color: 'orange' }}>{snackbar.message}</p>}
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={isLoading}>
@@ -176,17 +184,17 @@ const AssignDialog: React.FC<AssignDialogProps> = ({ open, onClose, selectedRows
         </DialogActions>
       </Dialog>
       <Snackbar
-        open={openErrorSnackbar}
-        autoHideDuration={3000} // Automatically hide after 3 seconds
-        onClose={() => setOpenErrorSnackbar(false)}
-        message={error} // Display the message
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        sx={{
-          backgroundColor: '', // Error background color
-          color: 'error', // White text color
-          borderRadius: 1,
-        }}
-      />
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        {snackbar.severity && (
+          <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        )}
+      </Snackbar>
     </>
   );
 };

@@ -276,9 +276,9 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
   // Function to filter codes based on user role
   const getFilteredCodes = () => {
     const allCodes = Object.keys(apiCodeConfigurations);
-    if (user && user.role.toLowerCase() === 'caller') {
+    if (user && user.type.toLowerCase() === 'caller') {
       return allCodes.filter(codeKey => apiCodeConfigurations[codeKey].category === 'CALLING' || apiCodeConfigurations[codeKey].category === 'BOTH');
-    } if (user && user.role.toLowerCase() === 'executive') {
+    } if (user && user.type.toLowerCase() === 'executive') {
       return allCodes.filter(codeKey => apiCodeConfigurations[codeKey].category === 'VISIT' || apiCodeConfigurations[codeKey].category === 'BOTH');
     } 
       return allCodes;
@@ -323,7 +323,7 @@ const FeedbackDialog: React.FC<FeedbackProps> = ({ isOpen, onClose, selectedData
                           const codeConfig = apiCodeConfigurations[codeKey];
                           let itemStyle = {};
                           // Apply different colors for admin to categorize codes visually
-                          if (user && user.role.toLowerCase() === 'admin') {
+                          if (user && user.type.toLowerCase() === 'admin') {
                             itemStyle = codeConfig?.category === 'CALLING' ? { color: 'purple' } : (codeConfig.category === 'VISIT' ? { color: 'darkgreen' } : { color: 'black' }); // Color CALLING purple, VISIT green, BOTH black
                           }
                           return (

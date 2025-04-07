@@ -140,7 +140,7 @@ export function UserView() {
                     { id: "avatar" },
                     { id: 'name', label: 'Name' },
                     { id: 'email', label: 'Email' },
-                    { id: 'role', label: 'Role' },
+                    { id: 'type', label: 'UserType' },
                     { id: '' },
                   ]}
                 />
