@@ -66,8 +66,20 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete, ava
         </TableCell>
 
         <TableCell>{row.email}</TableCell>
-
         <TableCell>{row.type}</TableCell>
+        <TableCell>{row.mobile_number}</TableCell>
+        {
+          (row.verified) ? (
+            <TableCell>
+              <Iconify icon="eva:checkmark-circle-2-fill" sx={{ color: 'success.main' }} />
+            </TableCell>
+          ) : (
+            <TableCell>
+              <Iconify icon="eva:close-circle-fill" sx={{ color: 'error.main' }} />
+            </TableCell>
+          )
+        }
+        <TableCell>{row.status}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
@@ -104,7 +116,11 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete, ava
             Edit
           </MenuItem>
 
-          <MenuItem onClick={onDelete} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={() => {
+              if (window.confirm(`Are you sure you want to delete user "${row.name}"?`)) {
+                onDelete();
+              }
+            }} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>

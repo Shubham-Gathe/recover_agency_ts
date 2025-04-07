@@ -9,6 +9,8 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 
 import api from 'src/utils/api';
@@ -31,6 +33,8 @@ import type { UserProps } from '../user-table-row';
 // ----------------------------------------------------------------------
 export function UserView() {
   const table = useTable();
+  const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" }>({ message: "", severity: 'error' });
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [filterName, setFilterName] = useState('');
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProps | null>(null);
@@ -88,110 +92,140 @@ export function UserView() {
     handleCloseAddUserDialog();
   };
 
-  const handleDeleteUser = (id: string) => {
-    setUsers(users.filter((user) => user.id !== id));
+  const handleDeleteUser = async (id: string) => {
+    setLoading(true);
+    try {
+      const response = await api.delete(`/user_block/users/${id}`);
+      setSnackbar({ message: response.data.message || 'User deleted successfully', severity: 'success' });
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setSnackbar({ message: error.data.message || 'something went wrong', severity: 'error' });
+      setOpenSnackbar(true);
+      setUsers(users.filter((user) => user.id !== id));
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   return (
-    <DashboardContent>
-      <Box display="flex" alignItems="center" mb={5}>
-        <Typography variant="h4" flexGrow={1}>
-          Users
-        </Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={() => handleOpenAddUserDialog()}
-        >
-          New user
-        </Button>
-      </Box>
+    <>
+      <DashboardContent>
+        <Box display="flex" alignItems="center" mb={5}>
+          <Typography variant="h4" flexGrow={1}>
+            Users
+          </Typography>
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={() => handleOpenAddUserDialog()}
+          >
+            New user
+          </Button>
+        </Box>
 
-      <Card>
-        <UserTableToolbar
-          numSelected={table.selected.length}
-          filterName={filterName}
-          onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setFilterName(event.target.value);
-            table.onResetPage();
-          }}
-        />
+        <Card>
+          <UserTableToolbar
+            numSelected={table.selected.length}
+            filterName={filterName}
+            onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setFilterName(event.target.value);
+              table.onResetPage();
+            }}
+          />
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            {loading ? (
-              <Typography align="center">Loading...</Typography>
-            ) : (
-              <Table sx={{ minWidth: 800 }}>
-                <UserTableHead
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  rowCount={users.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      users.map((user) => user.id)
-                    )
-                  }
-                  headLabel={[
-                    { id: "avatar" },
-                    { id: 'name', label: 'Name' },
-                    { id: 'email', label: 'Email' },
-                    { id: 'type', label: 'UserType' },
-                    { id: '' },
-                  ]}
-                />
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)} // Check if row is selected
-                        onSelectRow={() => table.onSelectRow(row.id)} // Update selection on row click
-                        onEdit={() => handleOpenAddUserDialog(row)}
-                        onDelete={() => handleDeleteUser(row.id)}
-                        avatar={row.avatar}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={68}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)}
+          <Scrollbar>
+            <TableContainer sx={{ overflow: 'unset' }}>
+              {loading ? (
+                <Typography align="center">Loading...</Typography>
+              ) : (
+                <Table sx={{ minWidth: 800 }}>
+                  <UserTableHead
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    rowCount={users.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    onSelectAllRows={(checked) =>
+                      table.onSelectAllRows(
+                        checked,
+                        users.map((user) => user.id)
+                      )
+                    }
+                    headLabel={[
+                      { id: "avatar" },
+                      { id: 'name', label: 'Name' },
+                      { id: 'email', label: 'Email' },
+                      { id: 'type', label: 'UserType' },
+                      { id: 'mobile_number', label: 'Mobile' },
+                      { id: 'verified', label: 'Verified?' },
+                      { id: 'status', label: 'Status' },
+                      { id: 'action', label: 'Actions' },
+                    ]}
                   />
+                  <TableBody>
+                    {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row) => (
+                        <UserTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)} // Check if row is selected
+                          onSelectRow={() => table.onSelectRow(row.id)} // Update selection on row click
+                          onEdit={() => handleOpenAddUserDialog(row)}
+                          onDelete={() => handleDeleteUser(row.id)}
+                          avatar={row.avatar}
+                        />
+                      ))}
 
-                  {notFound && <TableNoData searchQuery={filterName} />}
-                </TableBody>
-              </Table>
-            )}
-          </TableContainer>
-        </Scrollbar>
+                    <TableEmptyRows
+                      height={68}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)}
+                    />
 
-        <TablePagination
-          component="div"
-          page={table.page}
-          count={users.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          rowsPerPageOptions={[5, 10, 25,200]}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
+                    {notFound && <TableNoData searchQuery={filterName} />}
+                  </TableBody>
+                </Table>
+              )}
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            component="div"
+            page={table.page}
+            count={users.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            rowsPerPageOptions={[5, 10, 25,200]}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+
+        <AddUserDialog
+          open={openAddUserDialog}
+          onClose={handleCloseAddUserDialog}
+          onAddUser={handleAddOrEditUser}
+          editingUser={editingUser}
         />
-      </Card>
-
-      <AddUserDialog
-        open={openAddUserDialog}
-        onClose={handleCloseAddUserDialog}
-        onAddUser={handleAddOrEditUser}
-        editingUser={editingUser}
-      />
-    </DashboardContent>
+      </DashboardContent>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        {snackbar.severity && (
+          <Alert onClose={() => setOpenSnackbar(false)} severity={snackbar.severity} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        )}
+      </Snackbar>
+    </>
   );
 }
 
@@ -201,7 +235,7 @@ export function UserView() {
 export function useTable() {
   const [page, setPage] = useState(0);
   const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState<string[]>([]);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 
