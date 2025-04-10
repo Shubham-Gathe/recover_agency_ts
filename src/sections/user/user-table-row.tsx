@@ -29,13 +29,14 @@ export type UserProps = {
 type UserTableRowProps = {
   row: UserProps;
   selected: boolean;
+  onSelectUser: () => void;
   onSelectRow: () => void;
   onEdit: () => void;
   onDelete: () => void;
   avatar?: string;  // Add avatar to the row props
 };
 
-export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete, avatar }: UserTableRowProps) {
+export function UserTableRow({ row, onSelectUser, selected, onSelectRow, onEdit, onDelete, avatar }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -111,6 +112,11 @@ export function UserTableRow({ row, selected, onSelectRow, onEdit, onDelete, ava
             },
           }}
         >
+          <MenuItem onClick={onSelectUser}>
+            <Iconify icon="solar:user-id-bold" />
+            View
+          </MenuItem>
+
           <MenuItem onClick={onEdit}>
             <Iconify icon="solar:pen-bold" />
             Edit

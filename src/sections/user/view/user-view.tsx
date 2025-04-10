@@ -29,6 +29,7 @@ import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../user-table-row';
+import ViewUserDialog from './ViewUserDialog';
 
 // ----------------------------------------------------------------------
 export function UserView() {
@@ -37,7 +38,8 @@ export function UserView() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [filterName, setFilterName] = useState('');
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
-  const [editingUser, setEditingUser] = useState<UserProps | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
+  const [openViewUserDialog, setOpenViewUserDialog] = useState(false);
   const [users, setUsers] = useState<UserProps[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -71,21 +73,21 @@ export function UserView() {
 
   const handleOpenAddUserDialog = (user?: UserProps) => {
     if (user) {
-      setEditingUser(user);
+      setSelectedUser(user);
     } else {
-      setEditingUser(null);
+      setSelectedUser(null);
     }
     setOpenAddUserDialog(true);
   };
 
   const handleCloseAddUserDialog = () => {
     setOpenAddUserDialog(false);
-    setEditingUser(null);
+    setSelectedUser(null);
   };
 
   const handleAddOrEditUser = (newUser: UserProps) => {
-    if (editingUser) {
-      setUsers(users.map((user) => (user.id === editingUser.id ? { ...user, ...newUser } : user)));
+    if (selectedUser) {
+      setUsers(users.map((user) => (user.id === selectedUser.id ? { ...user, ...newUser } : user)));
     } else {
       setUsers([...users, newUser]);
     }
@@ -108,6 +110,16 @@ export function UserView() {
     }
 
   };
+
+  const handleViewUserDialog = (user: UserProps) => {
+    setOpenViewUserDialog(true);
+    setSelectedUser(user);
+  }
+
+  const handleCloseViewUserDialog = () => {
+    setOpenViewUserDialog(false);
+    setSelectedUser(null);
+  }
 
   return (
     <>
@@ -175,6 +187,7 @@ export function UserView() {
                         <UserTableRow
                           key={row.id}
                           row={row}
+                          onSelectUser={() => handleViewUserDialog(row)}
                           selected={table.selected.includes(row.id)} // Check if row is selected
                           onSelectRow={() => table.onSelectRow(row.id)} // Update selection on row click
                           onEdit={() => handleOpenAddUserDialog(row)}
@@ -210,7 +223,16 @@ export function UserView() {
           open={openAddUserDialog}
           onClose={handleCloseAddUserDialog}
           onAddUser={handleAddOrEditUser}
-          editingUser={editingUser}
+          editingUser={selectedUser}
+        />
+
+        <ViewUserDialog
+          open={openViewUserDialog}
+          onClose={handleCloseViewUserDialog}
+          user={selectedUser}
+          // onEdit={() => selectedUser}
+          // onSuspend={() => null}
+          // onDeactivate={() => null}
         />
       </DashboardContent>
       <Snackbar
