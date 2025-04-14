@@ -11,6 +11,7 @@ import MyAllocations from 'src/pages/my-allocations'
 import { DashboardLayout } from 'src/layouts/dashboard';
 
 import PivotTable from 'src/sections/pivot/PivotTable';
+import AdminAttendancePage from 'src/pages/AdminAttendancePage';
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));
@@ -67,9 +68,10 @@ export function Router() {
       children: [
         { path: '/maa_sharda_app/dashboard', element: <HomePage />, index: true },
         { path: '/maa_sharda_app/dashboard/user', element: <UserPage /> },
-        { path:'/maa_sharda_app/dashboard/allocations',element: <Allocations/>},
-        { path:'/maa_sharda_app/dashboard/my-allocations',element: <MyAllocations/>},
-        { path:'/maa_sharda_app/dashboard/pivot-reports',element: <PivotTable/>}
+        { path:'/maa_sharda_app/dashboard/allocations', element: <Allocations/>},
+        { path:'/maa_sharda_app/dashboard/my-allocations', element: <MyAllocations/>},
+        { path:'/maa_sharda_app/dashboard/pivot-reports', element: <PivotTable/>},
+        { path:'/maa_sharda_app/dashboards/attendances', element: <AdminAttendancePage/>}
       ],
     },
     {

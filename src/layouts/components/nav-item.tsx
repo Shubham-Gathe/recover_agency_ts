@@ -7,6 +7,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 // Define the structure for navigation items
 interface NavItem {
@@ -56,8 +57,13 @@ export const useNavData = (): NavItem[] => {
       path: '/maa_sharda_app/dashboard/pivot-reports',
       icon: <PivotTableChartIcon/>,
     },
+    {
+      title: 'Attendances',
+      path: '/maa_sharda_app/dashboards/attendances',
+      icon: <BarChartIcon />,
+    },
   ];
-
+  
   // Regular user-specific links
   const userNav: NavItem[] = [
     {

@@ -7,6 +7,7 @@ import { Box, Card, Button, Typography } from '@mui/material';
 import api from 'src/utils/api';
 
 import LoadingScreen from 'src/components/ui/LoadingScreen';
+import './PivotTable.css';
 
 // interface PivotResult {
 //   rowKey: string;
@@ -145,6 +146,7 @@ const PivotTable: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      
         <Box display="flex" alignItems="center" mb={3} sx={{ gap: 2 }}>
           <Typography variant="h4" flexGrow={1}>
             Pivot Table
@@ -159,7 +161,9 @@ const PivotTable: React.FC = () => {
         </Box>
         <Card sx={{ p: 2, overflow: 'auto', minHeight: '80vh' }}>
           <LoadingScreen open={loading} />
-          <div id="pivot-table-container" ref={pivotContainerRef} />
+          <div id="pivot-wrapper">
+            <div id="pivot-table-container" style={{ width: '1000px' }} ref={pivotContainerRef} />
+          </div>
         </Card>
       </Box>
   );

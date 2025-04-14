@@ -1,0 +1,10 @@
+#pivot-wrapper{
+  height: 90vh !important;
+  width: 80vw !important;
+}
+div#wdr-pivot-view {
+  height: 100% !important;
+}
+div#pivot-table-container {
+  height: 100% !important;
+}

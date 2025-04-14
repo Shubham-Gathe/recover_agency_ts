@@ -111,7 +111,7 @@ export function SignInView() {
         open={openErrorSnackbar} 
         autoHideDuration={3000} 
         onClose={() => setOpenErrorSnackbar(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert 
           severity="error" 

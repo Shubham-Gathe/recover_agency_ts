@@ -4,6 +4,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 
 import authReducer from './authSlice';
+import attendanceReducer from './attendanceSlice';
+import adminAttendanceReducer from './adminAttendanceSlice';
 
 // Configuration for redux-persist
 const persistConfig = {
@@ -16,6 +18,8 @@ const persistConfig = {
 // Combine reducers (if more slices are added in the future, add them here)
 const rootReducer = combineReducers({
   auth: authReducer,
+  attendance: attendanceReducer,
+  adminAttendance: adminAttendanceReducer,
 });
 
 // Persist the root reducer
@@ -34,5 +38,5 @@ export const store = configureStore({
 export const persistor = persistStore(store);
 
 // Export RootState and AppDispatch types
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

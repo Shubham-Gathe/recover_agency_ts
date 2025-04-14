@@ -25,7 +25,7 @@ api.interceptors.response.use(
       console.log('Token expired, logging out...');
       store.dispatch(logout()); // Dispatch logout action
       localStorage.removeItem('token');
-      window.location.href = '/login'; // Redirect user to login
+      window.location.href = '/maa_sharda_app/login'; // Redirect user to login
 
     }
     return Promise.reject(error);
