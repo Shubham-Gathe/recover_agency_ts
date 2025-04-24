@@ -4,10 +4,10 @@ import type { RootState } from 'src/store/store';
 import { useSelector } from 'react-redux';
 
 import GroupIcon from '@mui/icons-material/Group';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
-import BarChartIcon from '@mui/icons-material/BarChart';
 
 // Define the structure for navigation items
 interface NavItem {

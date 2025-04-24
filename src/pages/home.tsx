@@ -1,10 +1,11 @@
+import type { RootState } from 'src/store/store';
+
+import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
-import { useSelector } from 'react-redux';
 
 import { OverviewAnalyticsView } from 'src/sections/overview/view';
-import { RootState } from 'src/store/store';
 
 import UserDashboard from './user-dashboard';
 

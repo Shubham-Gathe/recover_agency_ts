@@ -9,9 +9,9 @@ import { AuthLayout } from 'src/layouts/auth';
 import Allocations from 'src/pages/allocations'
 import MyAllocations from 'src/pages/my-allocations'
 import { DashboardLayout } from 'src/layouts/dashboard';
+import AdminAttendancePage from 'src/pages/AdminAttendancePage';
 
 import PivotTable from 'src/sections/pivot/PivotTable';
-import AdminAttendancePage from 'src/pages/AdminAttendancePage';
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));

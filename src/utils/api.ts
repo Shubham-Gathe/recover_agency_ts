@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import { store } from 'src/store/store';
 import { logout } from 'src/store/authSlice';
 
 const api = axios.create({
@@ -18,18 +17,19 @@ api.interceptors.request.use((config) => {
 });
 
 // **Handle expired tokens (401 Unauthorized)**
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.log('Token expired, logging out...');
-      store.dispatch(logout()); // Dispatch logout action
-      localStorage.removeItem('token');
-      window.location.href = '/maa_sharda_app/login'; // Redirect user to login
-
+export const setupApiInterceptors = (store: any) => {
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        console.log('Token expired, logging out...');
+        store.dispatch(logout()); // Dispatch logout action
+        localStorage.removeItem('token');
+        window.location.href = '/maa_sharda_app/login'; // Redirect user to login
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+};
 
 export default api;

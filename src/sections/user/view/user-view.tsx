@@ -4,13 +4,13 @@ import {
   Box,
   Card,
   Table,
+  Alert,
   Button,
+  Snackbar,
   TableBody,
   Typography,
   TableContainer,
   TablePagination,
-  Snackbar,
-  Alert,
 } from '@mui/material';
 
 import api from 'src/utils/api';
@@ -20,6 +20,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
+import ViewUserDialog from './ViewUserDialog';
 import { TableNoData } from '../table-no-data';
 import { AddUserDialog } from './AddUserDialog';
 import { UserTableRow } from '../user-table-row';
@@ -29,7 +30,6 @@ import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../user-table-row';
-import ViewUserDialog from './ViewUserDialog';
 
 // ----------------------------------------------------------------------
 export function UserView() {

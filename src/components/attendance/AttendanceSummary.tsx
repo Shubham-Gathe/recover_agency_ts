@@ -1,5 +1,8 @@
+import type { Theme } from '@mui/material';
+
 import React from 'react';
-import { Box, Typography, styled, Theme } from '@mui/material';
+
+import { Box, styled, Typography } from '@mui/material';
 
 interface SummaryData {
   [key: string]: number | string | boolean | React.ReactNode; // Allow various value types

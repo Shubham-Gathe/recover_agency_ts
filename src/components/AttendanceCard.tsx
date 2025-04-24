@@ -1,7 +1,10 @@
+import type { RootState, AppDispatch } from 'src/store/store';
+
 import React from 'react';
-import { Card, CardContent, Typography, Button, Stack, Chip, CircularProgress, Snackbar, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from 'src/store/store';
+
+import { Card, Chip, Stack, Button, Divider, Snackbar, Typography, CardContent, CircularProgress } from '@mui/material';
+
 import { checkIn, checkOut } from 'src/store/attendanceSlice';
 
 type AttendanceStatus = 'present' | 'late' | 'absent' | 'on_leave' | 'not_found';

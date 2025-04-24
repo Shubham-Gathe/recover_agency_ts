@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import type { AppDispatch } from 'src/store/store';
+
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import {
   Box,
-  Container,
-  Tabs,
   Tab,
-  Typography,
+  Tabs,
   Paper,
   Divider,
+  Typography,
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'src/store/store';
 
 import LiveAttendanceTable from 'src/components/attendance/LiveAttendanceTable';
-import DailyAttendanceTable from 'src/components/attendance/DailyAttendanceTable';
 import MonthlySummaryTable from 'src/components/attendance/MonthlySummaryTable';
+import DailyAttendanceTable from 'src/components/attendance/DailyAttendanceTable';
 
 const AdminAttendancePage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,8 +25,7 @@ const AdminAttendancePage = () => {
   };
 
   return (
-    <>
-      <Box  sx={{ p: 3 }}>
+    <Box  sx={{ p: 3 }}>
         <Typography variant="h4" fontWeight={600} gutterBottom>
           Admin Attendance Dashboard
         </Typography>
@@ -52,7 +52,6 @@ const AdminAttendancePage = () => {
           </Box>
         </Paper>
       </Box>
-    </>
   );
 };
 

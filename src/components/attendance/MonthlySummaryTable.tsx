@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  TextField,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from 'src/store/store';
-import { fetchMonthlyAttendance } from 'src/store/adminAttendanceSlice';
+import type { RootState, AppDispatch } from 'src/store/store';
 
 import dayjs from 'dayjs';
-import AttendanceSummary from './AttendanceSummary';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import {
+  Box,
+  Table,
+  TableRow,
+  TextField,
+  TableHead,
+  TableCell,
+  TableBody,
+  Typography,
+  CircularProgress,
+} from '@mui/material';
+
+import { fetchMonthlyAttendance } from 'src/store/adminAttendanceSlice';
+
 
 const MonthlySummaryTable = () => {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
-import { Container, Typography } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from 'src/store/store';
-import { fetchTodayAttendance } from 'src/store/attendanceSlice';
-import AttendanceCard from 'src/components/AttendanceCard';
+
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { Typography } from '@mui/material';
+
 import { DashboardContent } from 'src/layouts/dashboard';
+import { fetchTodayAttendance } from 'src/store/attendanceSlice';
+
+import AttendanceCard from 'src/components/AttendanceCard';
 
 const UserDashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

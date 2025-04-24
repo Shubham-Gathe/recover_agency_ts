@@ -1,3 +1,5 @@
+import './PivotTable.css';
+
 import WebDataRocks from 'webdatarocks';
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -7,7 +9,6 @@ import { Box, Card, Button, Typography } from '@mui/material';
 import api from 'src/utils/api';
 
 import LoadingScreen from 'src/components/ui/LoadingScreen';
-import './PivotTable.css';
 
 // interface PivotResult {
 //   rowKey: string;

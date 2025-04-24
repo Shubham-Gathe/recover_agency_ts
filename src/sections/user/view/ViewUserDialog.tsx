@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+import CloseIcon from '@mui/icons-material/Close';
 import {
+  Grid,
   Dialog,
+  Typography,
+  IconButton,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  Typography,
-  IconButton,
-  Box,
-  Grid,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 
 type UserProps = {
   id: string;

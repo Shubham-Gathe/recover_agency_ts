@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
 import api from 'src/utils/api';
 
 export interface AttendanceUser {

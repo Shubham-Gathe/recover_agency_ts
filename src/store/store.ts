@@ -3,10 +3,11 @@ import storage from 'redux-persist/lib/storage';
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 
+import { setupApiInterceptors } from 'src/utils/api';
+
 import authReducer from './authSlice';
 import attendanceReducer from './attendanceSlice';
 import adminAttendanceReducer from './adminAttendanceSlice';
-
 // Configuration for redux-persist
 const persistConfig = {
   key: 'root',
@@ -33,6 +34,9 @@ export const store = configureStore({
       serializableCheck: false, // Disable serializable check for redux-persist compatibility
     }),
 });
+
+// Set up API interceptors with the store
+setupApiInterceptors(store);
 
 // Create and export the persistor
 export const persistor = persistStore(store);

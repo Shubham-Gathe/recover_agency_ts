@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import type { Dayjs } from 'dayjs';
+import type { RootState, AppDispatch } from 'src/store/store';
+
+import dayjs from 'dayjs';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   Box,
-  CircularProgress,
+  Chip,
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
-  Typography,
-  Chip,
   TextField,
+  Typography,
+  CircularProgress,
 } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from 'src/store/store';
-import { fetchDailyAttendance } from 'src/store/adminAttendanceSlice';
-import dayjs, { Dayjs } from 'dayjs';
+
 import { formatTime } from 'src/utils/formatDate';
+
+import { fetchDailyAttendance } from 'src/store/adminAttendanceSlice';
+
 import AttendanceSummary from './AttendanceSummary';
 
 
@@ -49,7 +55,7 @@ const DailyAttendanceTable = () => {
     const statusCounts: Record<string, number> = {};
   
     attendanceData.forEach((employee) => {
-      const status = employee.status;
+      const {status} = employee;
       statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
   
