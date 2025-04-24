@@ -179,6 +179,23 @@ const AllocationView = () => {
     defaultColumns.filter((col) => columnVisibility[col.field] !== false)
   );
 
+  const fetchSearchableColumns = async () => {
+    try {
+      const response = await api.get("/get_searchable_columns");
+      const { data } = response;
+      localStorage.setItem("searchable_columns", JSON.stringify(data.searchable_columns));
+    } catch (error) {
+      console.error("Error fetching searchable columns:", error);
+    }
+  };
+
+  useEffect(() => {
+    const storedColumns = localStorage.getItem("searchable_columns");
+    if (!storedColumns || storedColumns === "undefined") {
+      fetchSearchableColumns();
+    }
+  }, []);
+
   useEffect(() => {
     const updatedVisibleColumns = defaultColumns.filter((col) => columnVisibility[col.field] !== false);
     setVisibleColumns(updatedVisibleColumns);

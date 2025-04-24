@@ -6,69 +6,53 @@ import {
   Card,
   Button,
   Popover,
-  Checkbox,
   TextField,
-  FormGroup,
   Typography,
   FormControl,
   CircularProgress,
-  FormControlLabel,
 } from '@mui/material';
-
+import Autocomplete from '@mui/material/Autocomplete';
 
 interface SearchAllocationsProps {
   onSearch: (query: string, fields: string[]) => void;
   onReset: () => void;
 }
+
 const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset }) => {
   const [query, setQuery] = useState<string>('');
-  const [fields, setFields] = useState<string[]>(['name']);
+  const [fields, setFields] = useState<string[]>(['customer_name']);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // const getAllocations = async (query: string, fields: string[]) => {
-  //   try {
-  //     const params = {
-  //       q: {
-  //         groupings: fields.map((field) => ({ [`${field  }_cont`]: query })),
-  //       },
-  //     };
-  //     const response = await api.get(`/dashboards/get_allocations`, { params });
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Error fetching allocations:', error);
-  //     throw error;
-  //   }
-  // };
+  const storedColumns = localStorage.getItem("searchable_columns");
+  let fieldOptions = [];
+  
+  if (storedColumns) {
+    try {
+      fieldOptions = JSON.parse(storedColumns); // Parse the string back into an array
+    } catch (error) {
+      console.error("Error parsing stored columns:", error);
+    }
+  }
 
   const handleSearch = async () => {
     if (query.trim()) {
       setLoading(true);
       try {
-        onSearch(query, fields); // Pass search parameters instead of results
+        onSearch(query, fields);
       } catch (error) {
         console.error('Error:', error);
       } finally {
         setLoading(false);
       }
     } else {
-      onSearch('', []); // Clear search
+      onSearch('', []);
     }
   };
 
   const handleReset = () => {
-    setQuery(''); // Clear local query state
-    setFields(['customer_name']); // Reset fields to default
-    onReset(); // Notify parent to reset table
-  };
-
-
-  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const field = event.target.name;
-    if (fields.includes(field)) {
-      setFields(fields.filter((f) => f !== field));
-    } else {
-      setFields([...fields, field]);
-    }
+    setQuery('');
+    setFields(['customer_name']);
+    onReset();
   };
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -91,7 +75,7 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
         variant="contained"
         onClick={handleClick}
         startIcon={<SearchIcon />}
-        sx={{ }}
+        sx={{}}
       >
         Find
       </Button>
@@ -106,43 +90,19 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
           horizontal: 'left',
         }}
       >
-        
         <Card variant="outlined" sx={{ maxWidth: 360 }}>
           <Box sx={{ p: 2 }}>
             <Typography>Search Allocations</Typography>
             <FormControl component="fieldset" fullWidth margin="normal">
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                    checked={fields.includes('customer_name')}
-                    onChange={handleFieldChange}
-                    name="customer_name"
-                    />
-                  }
-                  label="customer_name"
-                  />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                    checked={fields.includes('fos_name')}
-                    onChange={handleFieldChange}
-                    name="fos_name"
-                    />
-                  }
-                  label="fos_name"
-                  />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                    checked={fields.includes('caller_name')}
-                    onChange={handleFieldChange}
-                    name="caller_name"
-                    />
-                  }
-                  label="caller_name"
-                  />
-              </FormGroup>
+              <Autocomplete
+                multiple
+                options={Array.isArray(fieldOptions) ? fieldOptions : []}
+                value={fields}
+                onChange={(event, newValue) => setFields(newValue)}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" label="Fields to search" />
+                )}
+              />
             </FormControl>
             <TextField
               fullWidth
@@ -151,23 +111,23 @@ const SearchAllocations: React.FC<SearchAllocationsProps> = ({ onSearch, onReset
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               margin="normal"
-              />
+            />
             <Button
               variant="contained"
               color="primary"
               onClick={handleSearch}
               disabled={loading}
               sx={{ mt: 2 }}
-              >
+            >
               Search
             </Button>
             <Button
               variant="outlined"
-              color="secondary"
+              color="primary"
               onClick={handleReset}
               disabled={loading}
-              sx={{ mt: 2 }}
-              >
+              sx={{ mt: 2, ml: 1 }}
+            >
               Reset
             </Button>
             {loading && <CircularProgress />}
