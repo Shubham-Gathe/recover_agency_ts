@@ -23,8 +23,6 @@ type AddUserDialogProps = {
   editingUser: UserProps | null;
 };
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 type FieldValues = { [field: string]: string };
 type FieldErrors = { [field: string]: string };
 
@@ -111,13 +109,13 @@ export function AddUserDialog({ open, onClose, onAddUser, editingUser }: AddUser
     try {
       if (editingUser) {
         // Update existing user using PUT or PATCH
-        await api.put(`${apiUrl}/user_block/users/${editingUser.id}`, newUser);
+        await api.put(`/user_block/users/${editingUser.id}`, newUser);
         onAddUser(newUser); // Notify parent component about the update
         setSnackbar({ message: 'User updated successfully', severity: 'success' });
         setOpenSnackbar(true);
       } else {
         // Add new user using POST
-        const response = await api.post(`${apiUrl}/sign_up`, newUser);
+        const response = await api.post('/sign_up', newUser);
         onAddUser({ ...newUser, id: response.data.id }); // Notify parent component with the new user and generated ID
         setSnackbar({ message: response.data.message || 'User added successfully', severity: 'success' });
         setOpenSnackbar(true);

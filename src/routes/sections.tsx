@@ -9,6 +9,7 @@ import { AuthLayout } from 'src/layouts/auth';
 import Allocations from 'src/pages/allocations'
 import MyAllocations from 'src/pages/my-allocations'
 import { DashboardLayout } from 'src/layouts/dashboard';
+import AdminSettingsPage from 'src/pages/AdminSettingsPage';
 import AdminAttendancePage from 'src/pages/AdminAttendancePage';
 
 import PivotTable from 'src/sections/pivot/PivotTable';
@@ -71,7 +72,9 @@ export function Router() {
         { path:'/maa_sharda_app/dashboard/allocations', element: <Allocations/>},
         { path:'/maa_sharda_app/dashboard/my-allocations', element: <MyAllocations/>},
         { path:'/maa_sharda_app/dashboard/pivot-reports', element: <PivotTable/>},
-        { path:'/maa_sharda_app/dashboards/attendances', element: <AdminAttendancePage/>}
+        { path:'/maa_sharda_app/dashboards/attendances', element: <AdminAttendancePage/>},
+        { path:'/maa_sharda_app/dashboards/settings', element: <AdminSettingsPage/>}
+        
       ],
     },
     {

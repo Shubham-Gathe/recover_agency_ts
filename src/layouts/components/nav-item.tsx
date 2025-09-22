@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { RootState } from 'src/store/store';
 
 import { useSelector } from 'react-redux';
+import { SettingsIcon } from 'lucide-react';
 
 import GroupIcon from '@mui/icons-material/Group';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -61,6 +62,11 @@ export const useNavData = (): NavItem[] => {
       title: 'Attendances',
       path: '/maa_sharda_app/dashboards/attendances',
       icon: <BarChartIcon />,
+    },
+    {
+      title: 'Settings',
+      path: '/maa_sharda_app/dashboards/settings',
+      icon: <SettingsIcon />,
     },
   ];
   

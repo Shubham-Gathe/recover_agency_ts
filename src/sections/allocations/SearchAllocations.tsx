@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
+import Autocomplete from '@mui/material/Autocomplete';
 import {
   Box,
   Card,
@@ -11,7 +12,6 @@ import {
   FormControl,
   CircularProgress,
 } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
 
 interface SearchAllocationsProps {
   onSearch: (query: string, fields: string[]) => void;

@@ -13,13 +13,13 @@ interface AttendanceSummaryProps {
   data: SummaryData;
 }
 
-function capitalizeWords(str: string): string {
-  return str
-    .toLowerCase()
-    .split(/[-_\s]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
+// function capitalizeWords(str: string): string {
+//   return str
+//     .toLowerCase()
+//     .split(/[-_\s]+/)
+//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//     .join(' ');
+// }
 
 const BorderedBox = styled(Box)(({ theme }: { theme: Theme }) => ({
   border: `1px solid ${theme.palette.divider}`,

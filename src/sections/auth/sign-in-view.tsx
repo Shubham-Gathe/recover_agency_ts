@@ -15,8 +15,9 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { login } from 'src/store/authSlice'; // ✅ Improved Error UI
+import { login } from 'src/store/authSlice';
 import { Iconify } from 'src/components/iconify';
+import { Logo } from 'src/components/logo';
 
 interface LoginFormValues {
   email: string;
@@ -51,7 +52,11 @@ export function SignInView() {
   return (
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
+        <Box>
+          <Logo isSingle={false}/>
+        </Box>
         <Typography variant="h5">Log In</Typography>
+
       </Box>
 
       <form onSubmit={handleSubmit(onSubmit)}>

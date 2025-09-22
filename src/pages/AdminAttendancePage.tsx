@@ -17,7 +17,6 @@ import MonthlySummaryTable from 'src/components/attendance/MonthlySummaryTable';
 import DailyAttendanceTable from 'src/components/attendance/DailyAttendanceTable';
 
 const AdminAttendancePage = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
